@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="data/logo.png" />
+    <link rel="stylesheet" href="/templates/styles.css">
+
+    <script defer src="/socket.io/socket.io.js"></script>
+
+    <script defer src="/scripts/affichage.js"></script>
+    <script defer src="/scripts/client.js"></script>
+    <!--<script defer src="/scripts/jeu.js"></script>-->
+    
+    <title>Plouf Party</title>
+</head>
+
+    <header>
+        <span id="titre">PLOUF PARTY</span>
+    </header>
+
+  <body>
+    <div id = "Connexion"> 
+        <div id="pseudo">
+            pseudo:
+            <input type="text"  id="username" placeholder="Joueur" />
+        </div>
+
+        <div id="rejoindre">
+            Rejoindre une partie <br>
+            <input type="text" id="roomjoin" placeholder="Code de la room"></input>
+            <button id="roomjoinB" >Rejoindre</button>
+        </div>
+
+        <div id="creer">
+            Créer une partie <br>
+            <button id="creerB">Creer</button>
+        </div>
+
+    </div>  
+
+    <div id="roomEtChat" class ="cacher">
+        <div id="divRoomJeu">
+
+            <div id = "Room" class ="cacher">
+                <div id="id-room">
+                </div>
+        
+                <div id="liste-des-joueurs">
+        
+                </div>
+            
+                <div id="ajouter-bot">
+                    <button id="bAjouterBot">Ajouter bot</button>
+                    <div id="diffBot"></div>
+                    <template id="template-ajouter-bot">
+                        <button id="bBotAleatoire">Bot Aléatoire</button>
+                        <button id="bBotAlgo">Bot Algo</button>
+                        <button id="bBotIA">Bot IA</button>
+                        <button id="bAnnulerAjouterBot">X</button>
+                    </template>
+
+                </div>
+        
+                <div id="bouton-pret">
+                    <button id="pret">Pret !</button>
+                </div>
+        
+                <button id="Retour">Recharger la page</button>
+                
+            </div>
+
+            <div id = "FinPartie" class ="cacher">
+                <div class="Gagnant">
+                   <h1 id="username-gagnant"></h1>
+                </div>
+                <div>
+                    <button id="button-relancer">Relancer</button>
+                </div>
+            </div>
+        
+            <div id = "Jeu" class ="cacher">
+                <div id="interface">
+                    <div>Vous êtes <span id="affichagePseudo"></span><span id="indicationCouleur"></span></div>
+                    <div>C'est au tour de <span id="joueurActu"></span> </div>
+                </div>
+                <div id="plateau">
+                    <table>
+                        <!-- Lignes -->
+                        <tr id="ligne1">
+                            <!-- Colonnes -->
+                            <td id="case2" class="case"> </td>
+                            <td id="case3" class="case"> </td>
+                            <td id="case4" class="case"></td>
+                            <td id="case5" class="case"></td>
+                            <td id="case6" class="case"></td>
+                            <td id="case7" class="case"></td>
+                        </tr>
+                        <tr id="ligne2">
+                            <td id="case1" class="case"></td>
+                            <td class="eau"></td>
+                            <td class="eau"></td>
+                            <td class="eau"></td>
+                            <td class="eau"></td>
+                            <td id="case8" class="case"></td>
+                        </tr>
+                        <tr id="ligne3">
+                            <td id="case0" class="case"></td>
+                            <td class="plongeoir"></td>
+                            <td class="eau"></td>
+                            <td class="eau"></td>
+                            <td class="eau"></td>
+                            <td id="case9" class="case"></td>
+                        </tr>
+                        <tr id="ligne4">
+                            <td id="case17" class="case"></td>
+                            <td class="eau"></td>
+                            <td class="eau"></td>
+                            <td class="eau"></td>
+                            <td class="eau"></td>
+                            <td id="case10" class="case"></td>
+                        </tr>
+                        <tr id="ligne5">
+                            <td id="case16" class="case"></td>
+                            <td id="case15" class="case"></td>
+                            <td id="case14" class="case"></td>
+                            <td id="case13" class="case"></td>
+                            <td id="case12" class="case"></td>
+                            <td id="case11" class="case"></td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="demasquer">
+                    <select id="select-joueurs"></select>
+                    <select id="select-couleurs"></select>
+                    <button id="bouton-demasquer">demasquer</button>
+                </div>
+                <div id = "listeJoueurs"></div>
+            
+            </div>
+        </div>
+        <div id="divChat">
+            
+        </div>
+    </div>
+
+  </body>
+
+
+</html>
