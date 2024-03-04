@@ -14,10 +14,10 @@ app.get('/', (req,res) => {
     ///choses à envoyer au client (script, templates, ect...)
     res.sendFile(path.join(__dirname, 'public/templates/index.html'))
 });
-/*
+
 http.listen(port, () => (
     console.log(`listening on http://localhost:${port}`)
-))*/
+))
 let rooms = [];
 /*
     room = {
