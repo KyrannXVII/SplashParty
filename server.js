@@ -344,7 +344,7 @@ const broadCastBotActu = (room, plateau, denoncer) => {
 };
 
 //Permet de remettre les pions des bots à 3 pour relancer partie
-const broadCastBotFinPartie = (roostar ecouterum) => {
+const broadCastBotFinPartie = (room) => {
   room.players.forEach((element) => {
     if (element.estUnBot) {
     //  console.log(element.username);
