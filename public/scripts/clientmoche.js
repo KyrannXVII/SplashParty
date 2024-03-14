@@ -7,49 +7,32 @@ class player {
     this.color = undefined,
     this.ready = false,
     this.nbPions = 3
+    this.socket = undefined
+    this.estUnBot = false;
     }
 };
 let p =undefined;
 const socket = io();
 
-const usernamePlayer = (document.querySelector("#input-pseudo"));
+const usernamePlayer = (document.querySelector("#username"));
 
 const roomJoin = (document.querySelector("#roomjoin"));
 
-const createRoomButton = document.querySelector("#roomCreerB");
+const createRoomButton = document.querySelector("#creerB");
+console.log(createRoomButton)
 createRoomButton.addEventListener("click",() => {
-    if(usernamePlayer.value != ""){
-        usernamePlayer.classList.remove("is-invalid");
-        p = new player(usernamePlayer.value,socket.id);
-        socket.emit('playerData',p);
-        //console.debug("joueur p");
-        //console.debug(p);
-        roomJoin.value = "";
-    }
-    else{
-        usernamePlayer.classList.add("is-invalid");
-    }
+    p = new player(usernamePlayer.value,socket.id);
+    socket.emit('playerData',p);
+    console.debug("joueur p");
+    console.debug(p);
 } );
 
 const joinRoomButton = document.querySelector("#roomjoinB");
 joinRoomButton.addEventListener("click",() => {
-    if(roomJoin.value == ""){
-        roomJoin.classList.add("is-invalid");
-        return
-    }
-    else{
-        roomJoin.classList.remove("is-invalid");
-    }
-    if(usernamePlayer.value != ""){
-        usernamePlayer.classList.remove("is-invalid");
-        p = new player(usernamePlayer.value,socket.id);
-        p.roomId = +roomJoin.value
-        socket.emit('playerData',p);
-        roomJoin.value = "";
-    }
-    else{
-        usernamePlayer.classList.add("is-invalid");
-    }
+    p = new player(usernamePlayer.value,socket.id);
+    p.roomId = +roomJoin.value
+    socket.emit('playerData',p);
+
 } );
 
 /* changement de page pas fou car faudrai use des cookie pour stocker les info des joueurs etc
@@ -62,29 +45,44 @@ socket.on("goRoom",()=>{
 socket.on("goRoom",(room)=>{
     /*Cache le div de connexion et affiche celui de la room */
     //console.log("bordel")
-    afficherRoom();
+    const conDiv = document.querySelector("#Connexion");
+    const roomDiv = document.querySelector("#Room");
+    const roomIDDiv = document.querySelector("#id-room");
+    const roomEtChat = document.querySelector("#roomEtChat");
+    conDiv.classList.add("cacher");
+    roomDiv.classList.remove("cacher");
+    roomEtChat.classList.remove("cacher");
 
     /* affichage du numero de room */
-    const idRoomP = document.querySelector("#id-room");
+    const idRoomP = document.createElement('p');
     p.roomId = room.id;
-    idRoomP.innerText = room.id;
+    idRoomP.innerText = `ID room : ${room.id}`;
+    roomIDDiv.append(idRoomP);
 
 }
 );
 
 /*TODO : Permet d'actualiser la liste des joueur de la room*/
+/*Moyen car utilsiation de innerHTML*/
 socket.on("actuRoom",(room)=>{
-    resetBomJoueursDansRoom();
+    const listeJoueurDiv = document.querySelector("#liste-des-joueurs")
+// ${room.players.map(player => `<li>${player.username}</li>`).join('')}
 
-    room.players.forEach(element => {
-        console.debug(element);
-        afficherNomJoueurDansRoom(element.username, element.ready);
-    });
+        let list =` <ul>  
+                        ${room.players.map((player) => {
+                            if(player.ready)
+                                return `<li>${player.username} ✔️</li>`
+                            else return `<li>${player.username}</li>`
+                        }).join('')}
+                    </ul>`
+
+        listeJoueurDiv.innerHTML = list;
+        //console.debug(player.username);
+    
 
 });
 
-
-const pretB = document.querySelector("#b-pret-roomjeu");
+const pretB = document.querySelector("#pret");
 pretB.addEventListener("click",()=>
 {
     p.ready = !p.ready;
@@ -98,9 +96,12 @@ pretB.addEventListener("click",()=>
 socket.on("lancerPartie",(plateau,aQuiLeTour,liste_username,nbJoueur,roomId)=>{
     //console.debug("roomId dans le on");
     //console.debug(roomId);
-    
-    afficherJeu();
+    const roomDiv = document.querySelector("#Room");
+    roomDiv.classList.add("cacher");
 
+    const jeuDiv = document.querySelector("#Jeu");
+    //console.log(jeuDiv);
+    jeuDiv.classList.remove("cacher");
     initAffichage(plateau,aQuiLeTour,liste_username,nbJoueur,roomId);
     
     const pionsB = document.querySelectorAll(".pion");
@@ -203,8 +204,9 @@ socket.on("actualisePartie",(plateau,aquiletour,liste_joueur_sans_couleur) => {
     })
 
 socket.on("FinPartie",(resultat)=>{
-    afficherFinPartie();
-    const hUsername = document.querySelector("#username-gagnant");
+    const divFin = document.querySelector("#FinPartie");
+    divFin.classList.remove("cacher");
+    const hUsername = divFin.querySelector("#username-gagnant");
 
     if(resultat[1]==0){
         hUsername.innerText = `${resultat[0].username} gagne en ayant le plus de pions restants !`
@@ -232,7 +234,12 @@ socket.on("Error",(message) =>{
 
 
 const relancerPartie = () => {
-    afficherRoom();
+    const jeuDiv = document.querySelector("#Jeu");
+    jeuDiv.classList.add("cacher");
+    const divFin = document.querySelector("#FinPartie");
+    divFin.classList.add("cacher");
+    const roomDiv = document.querySelector("#Room");
+    roomDiv.classList.remove("cacher");
 }
 
 const bRelance = document.querySelector("#button-relancer");
@@ -246,50 +253,34 @@ const activerPion = () =>{
     });
 }
 
-/* CORRECTION PROBLEME MODULO */
-Number.prototype.mod = function(n) {
-    return ((this%n)+n)%n;
-}
-
-const bIdRoom = document.querySelector("#id-room");
-bIdRoom.addEventListener("click", ()=>{
-
-    navigator.clipboard.writeText(bIdRoom.textContent);
-
-
-});
 
 const bAjouterBot = document.querySelector("#bAjouterBot");
 bAjouterBot.addEventListener("click", ()=>{
     bAjouterBot.disabled=true;
+    // clone le template
+    let templateAjoutBot = document.querySelector("#template-ajouter-bot").content.cloneNode(true).querySelectorAll("*"); //querySelectorAll("*") pour enlever les espaces et les <br>
+    let divDiffBot = document.querySelector("#diffBot");
+    // ajoute les boutons a la div
+    templateAjoutBot.forEach(element => {
+        //console.debug(element);
+        divDiffBot.appendChild(element);
+    });
     
     // listeners TODO pour ajouter les bots
-    const bBotAleatoire = document.querySelector("#bBotAleatoire");
-    bBotAleatoire.classList.remove("cacher");
+    let bBotAleatoire = divDiffBot.querySelector("#bBotAleatoire");
     bBotAleatoire.addEventListener("click", ()=>{(console.log("ajouter bot alétoire"),ajouterBot())});
-    const bBotAlgo = document.querySelector("#bBotAlgo");
-    bBotAlgo.classList.remove("cacher");
+    let bBotAlgo = divDiffBot.querySelector("#bBotAlgo");
     bBotAlgo.addEventListener("click", ()=>{console.log("ajouter bot algo")});
-    const bBotIA = document.querySelector("#bBotIA");
-    bBotIA.classList.remove("cacher");
+    let bBotIA = divDiffBot.querySelector("#bBotIA");
     bBotIA.addEventListener("click", ()=>{console.log("ajouter bot IA")});
 
     // X retire les boutons
-    const bAnnulerAjouterBot = document.querySelector("#bAnnulerAjouterBot");
-    bAnnulerAjouterBot.classList.remove("cacher");
+    let bAnnulerAjouterBot = divDiffBot.querySelector("#bAnnulerAjouterBot");
     bAnnulerAjouterBot.addEventListener("click", ()=>{
-        bBotAleatoire.classList.add("cacher");
-        bBotAlgo.classList.add("cacher");
-        bBotIA.classList.add("cacher");
-        bAnnulerAjouterBot.classList.add("cacher");
+        divDiffBot.textContent = "";
         bAjouterBot.disabled = false;
     });
 });
-
-const ajouterBot  = () =>{
-    socket.emit('AjouterBot',p.roomId);   
-    console.debug("bot");
-}
 
 
 socket.on("messageChat",(message, estInfoPartie)=>{
@@ -301,17 +292,14 @@ reloadB.addEventListener("click",() => {
     location.reload();
 })
 
-const bRetour = document.querySelector("#b-retour-roomjeu")
-bRetour.addEventListener("click",() => {
-    location.reload();
-})
+
+const ajouterBot  = () =>{
+    socket.emit('AjouterBot',p.roomId);   
+    console.debug("bot");
+}
 
 
-const bRetourAPropos = document.querySelector("#b-retour-a-propos");
-bRetourAPropos.addEventListener("click",() => {
-    afficherMenu();
-})
-const bAPropos = document.querySelector("#b-a-propos");
-bAPropos.addEventListener("click",() => {
-    afficherAPropos();
-})
+/* CORRECTION PROBLEME MODULO */
+Number.prototype.mod = function(n) {
+    return ((this%n)+n)%n;
+}

@@ -2,147 +2,300 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8" />
-    <link rel="icon" href="data/logo.png" />
-    <link rel="stylesheet" href="/templates/styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="icon" href="../data/logo.png" />
+    <link rel="stylesheet" href="../templates/styles.css">
+    <!-- include pour Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
 
     <script defer src="/socket.io/socket.io.js"></script>
 
-    <script defer src="/scripts/affichage.js"></script>
-    <script defer src="/scripts/client.js"></script>
-    <!--<script defer src="/scripts/jeu.js"></script>-->
+    <script defer src="../scripts/affichage.js"></script>
+    <script defer src="../scripts/client.js"></script>
     
     <title>Plouf Party</title>
 </head>
 
+  <body class="fond-eau"> <!-- fond-sol | fond-eau  -->
     <header>
-        <span id="titre">PLOUF PARTY</span>
+        <img src="../data/gouttes.png" class="img-header">
+        <img src="../data/titre.png" alt="Splash Party" id="titre">
+        <img src="../data/gouttes.png" class="img-header inverse">
+        
+        <button id="btn-header" class="btn btn-xs btn-warning" data-bs-toggle="offcanvas" href="#offcanvasRegles" role="button" aria-controls="offcanvasRegles" >
+            règles
+        </button>
     </header>
 
-  <body>
-    <div id = "Connexion"> 
-        <div id="pseudo">
-            pseudo:
-            <input type="text"  id="username" placeholder="Joueur" />
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasRegles" aria-labelledby="offcanvasReglesLabel">
+        <div class="offcanvas-header" id="offcanvasReglesHeader">
+          <h5 class="offcanvas-title" id="offcanvasReglesLabel">Règles du jeu</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
-
-        <div id="rejoindre">
-            Rejoindre une partie <br>
-            <input type="text" id="roomjoin" placeholder="Code de la room"></input>
-            <button id="roomjoinB" >Rejoindre</button>
+        <div class="offcanvas-body">
+          bla bla bla les règles
         </div>
+      </div>
 
-        <div id="creer">
-            Créer une partie <br>
-            <button id="creerB">Creer</button>
+    <!-- ECRAN DE CONNEXION -->
+    <div id = "ecran-connexion" class="ecran" >
+        <div class="container text-center">
+            <div id="pseudo" class="row align-items-start">
+                <div class="col-4 mx-auto">
+                    <label for="input-pseudo" class="form-label fs-2">Pseudo :</label>
+                    <input type="text" class="form-control" id="input-pseudo" placeholder="ton pseudo" maxlength="20" />    
+                </div>
+            </div>
+            <br>
+            <br>
+            
+            <div id="creer-rejoindre-partie" class="row justify-content-center">
+                <div id="creer" class="col-5">
+                    <br>
+                    <p class="fs-2">Créer une partie</p>
+                    <br>
+                    <br>
+                    <br>
+                    <button id="roomCreerB" class="btn btn-info btn-lg">Créer</button>
+                    <br>
+                    <br>
+                    <br>
+                </div>
+    
+                <div class="vr"></div>
+
+                <div id="rejoindre" class="col-5">
+                    <br>
+                    <p class="fs-2">Rejoindre une partie</p>
+                    <br>
+                    <div class="row">
+                        <div class="col-3"></div>
+                        <div class="col-6">
+                            <input type="text" id="roomjoin" placeholder="Code de la room" class="form-control"></input>
+                        </div>
+                        <div class="col-3"></div>
+                    </div>
+              
+                    <br>
+                    <br>
+                    <button id="roomjoinB" class="btn btn-info btn-lg" >Rejoindre</button>
+                </div>
+    
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-2 ">
+                    <button class="btn" id="b-a-propos">à propos</button>
+                </div>
+            </div>
         </div>
-
     </div>  
 
-    <div id="roomEtChat" class ="cacher">
-        <div id="divRoomJeu">
 
-            <div id = "Room" class ="cacher">
-                <div id="id-room">
-                </div>
-        
-                <div id="liste-des-joueurs">
-        
-                </div>
-            
-                <div id="ajouter-bot">
-                    <button id="bAjouterBot">Ajouter bot</button>
-                    <div id="diffBot"></div>
-                    <template id="template-ajouter-bot">
-                        <button id="bBotAleatoire">Bot Aléatoire</button>
-                        <button id="bBotAlgo">Bot Algo</button>
-                        <button id="bBotIA">Bot IA</button>
-                        <button id="bAnnulerAjouterBot">X</button>
-                    </template>
+
+
+
+
+
+
+
+
+
+    <!-- ECRAN DE PARTIE -->
+    <div id="roomEtChat" class="ecran cacher container-fluid">
+        <br>
+        <div class="row">
+
+            <!-- COTE JEU -->
+            <div id="divRoomJeu" class="col-9">
+
+                <!-- ECRAN D'ATTENTE -->
+                <div id="ecran-room" class="ecran cacher">
+                    <div class="row-1 fs-1">
+                        ID de la room : <button id="id-room" class="btn text-bg-warning"></button>
+                    </div>
+                    <br>
+                    <div id="images-joueurs" class="row">
+                        <div id="room-joueur-1" class="imageJoueur col-2 transparent text-center">
+                            <img src="../data/bouee-canard.png" alt="bouée" class="bouee-canard">
+                            <div class="pseudoJoueur text-center">
+                            </div>
+                        </div>
+                        <div id="room-joueur-2" class="imageJoueur col-2 transparent">
+                            <img src="../data/bouee-canard.png" alt="bouée" class="bouee-canard">
+                            <div class="pseudoJoueur text-center">
+                            </div>
+                        </div>
+                        <div id="room-joueur-3" class="imageJoueur col-2 transparent">
+                            <img src="../data/bouee-canard.png" alt="bouée" class="bouee-canard">
+                            <div class="pseudoJoueur text-center">
+                            </div>
+                        </div>
+                        <div id="room-joueur-4" class="imageJoueur col-2 transparent">
+                            <img src="../data/bouee-canard.png" alt="bouée" class="bouee-canard">
+                            <div class="pseudoJoueur text-center">
+                            </div>
+                        </div>
+                        <div id="room-joueur-5" class="imageJoueur col-2 transparent">
+                            <img src="../data/bouee-canard.png" alt="bouée" class="bouee-canard">
+                            <div class="pseudoJoueur text-center">
+                            </div>
+                        </div>
+                        <div id="room-joueur-6" class="imageJoueur col-2 transparent">
+                            <img src="../data/bouee-canard.png" alt="bouée" class="bouee-canard">
+                            <div class="pseudoJoueur text-center">
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+
+                    <div id="ajouter-bot" class="row-2">
+                        
+                        <button id="bAjouterBot" class="col-2 btn btn-info ">Ajouter un bot</button>
+                            
+                        <!-- ajouter .cacher a tous les boutons hors DEBUG -->
+                        <button id="bBotAleatoire" class="col-2 btn btn-dark btn-diff-bot cacher">Bot Aléatoire</button>
+                        <button id="bBotAlgo" class="col-2  btn btn-dark btn-diff-bot cacher">Bot Algo</button>
+                        <button id="bBotIA" class="col-2  btn btn-dark btn-diff-bot cacher">Bot IA</button>
+                        <button id="bAnnulerAjouterBot" class="col-1  btn btn-outline-danger btn-diff-bot cacher">X</button>
+    
+                    </div>
+                    <br>
+    
+                    <div class="row-3 text-center">
+                        <button id="b-pret-roomjeu" class="btn btn-info fs-1">Prêt !</button>
+                    </div>
+                    <div class="row-1">
+                        <button id="b-retour-roomjeu" class="col btn btn-outline-primary">Retour au menu</button>
+                    </div>
 
                 </div>
-        
-                <div id="bouton-pret">
-                    <button id="pret">Pret !</button>
-                </div>
-        
-                <button id="Retour">Recharger la page</button>
                 
+                
+
+                <!-- ECRAN FIN DE PARTIE -->
+                <div id = "ecran-fin-partie" class ="ecran cacher vstack">
+                    <div class="Gagnant">
+                        <h1 id="username-gagnant"></h1>
+                    </div>
+                        <button id="button-relancer" class="btn btn-info fs-1">Relancer</button>
+                        <button id="Retour" class="btn btn-outline-primary fs-3">Retour</button>
+                </div>
+
+                <!-- ECRAN DE JEU AVEC PLATEAU -->
+                <div id = "ecran-jeu" class ="ecran cacher">
+                    <div id="interface" class="vstack">
+                        <div class="fs-5">Vous êtes <span id="affichagePseudo"></span><span id="indicationCouleur"></span></div>
+                        <div class="fs-4">C'est au tour de <span id="joueurActu"></span> </div>
+                    </div>
+
+                    <div id="plateau" class="row justify-content-center">
+                        <div class="col-7">
+                            <div id="tab-plateau">
+                                <!-- Lignes -->
+                                <div id="ligne1">
+                                    <!-- Colonnes -->
+                                    <div class="case"></div>
+                                    <div id="case2" class="case">2</div>
+                                    <div id="case3" class="case">3</div>
+                                    <div id="case4" class="case">4</div>
+                                    <div id="case5" class="case">5</div>
+                                    <div id="case6" class="case">6</div>
+                                    <div id="case7" class="case">7</div>
+                                    <div class="case"></div>
+                                </div>
+                                <div id="ligne2">
+                                    <div id="case1" class="case">1</div>
+                                    <div class="eau"></div>
+                                    <div class="eau"></div>
+                                    <div class="eau"></div>
+                                    <div class="eau"></div>
+                                    <div class="eau"></div>
+                                    <div class="eau"></div>
+                                    <div id="case8" class="case">8</div>
+                                </div>
+                                <div id="ligne3">
+                                    <div id="case0" class="case">
+                                        <!--<img id="img-plongeoir" src="../data/plongeoir.png" alt="plongeoir">-->
+                                    </div>
+                                    <div class="plongeoir"></div>
+                                    <div class="eau"></div>
+                                    <div class="eau"></div>
+                                    <div class="eau"></div>
+                                    <div class="eau"></div>
+                                    <div class="eau"></div>
+                                    <div id="case9" class="case">9</div>
+                                </div>
+                                <div id="ligne4">
+                                    <div id="case17" class="case">17</div>
+                                    <div class="eau"></div>
+                                    <div class="eau"></div>
+                                    <div class="eau"></div>
+                                    <div class="eau"></div>
+                                    <div class="eau"></div>
+                                    <div class="eau"></div>
+                                    <div id="case10" class="case">10</div>
+                                </div>
+                                <div id="ligne5">
+                                    <div class="case"></div>
+                                    <div id="case16" class="case">16</div>
+                                    <div id="case15" class="case">15</div>
+                                    <div id="case14" class="case">14</div>
+                                    <div id="case13" class="case">13</div>
+                                    <div id="case12" class="case">12</div>
+                                    <div id="case11" class="case">11</div>
+                                    <div class="case"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+
+                    <div id="demasquer" class="row justify-content-center">
+                        <div class="col-8">
+                            <div class="hstack gap-3">
+                                <select id="select-joueurs" class="form-select" ></select>
+                                <select id="select-couleurs" class="form-select" ></select>
+                                <button id="bouton-demasquer" class="btn btn-info">demasquer</button>
+                            </div>
+                        </div>
+                    </div>
+                
+                </div>
             </div>
 
-            <div id = "FinPartie" class ="cacher">
-                <div class="Gagnant">
-                   <h1 id="username-gagnant"></h1>
+
+            <!-- COTE CHAT -->
+            <div id="divChat" class="col-3 position-relative">
+                <div id="chat" class="row">
+                    <div id="messages-chat" class="">
+                        
+                    </div>
                 </div>
-                <div>
-                    <button id="button-relancer">Relancer</button>
+                <div id="divInputChat" class="row position-absolute bottom-0 start-50 translate-middle-x">
+                    <div class="d-inline-flex">
+                        <input type="text" name="nouveau-message" id="inputChat" class="form-control">
+                        <button id="boutonEnvoyerChat" class="btn btn-primary">Envoyer</button>
+                    </div>
                 </div>
             </div>
-        
-            <div id = "Jeu" class ="cacher">
-                <div id="interface">
-                    <div>Vous êtes <span id="affichagePseudo"></span><span id="indicationCouleur"></span></div>
-                    <div>C'est au tour de <span id="joueurActu"></span> </div>
-                </div>
-                <div id="plateau">
-                    <table>
-                        <!-- Lignes -->
-                        <tr id="ligne1">
-                            <!-- Colonnes -->
-                            <td id="case2" class="case"> </td>
-                            <td id="case3" class="case"> </td>
-                            <td id="case4" class="case"></td>
-                            <td id="case5" class="case"></td>
-                            <td id="case6" class="case"></td>
-                            <td id="case7" class="case"></td>
-                        </tr>
-                        <tr id="ligne2">
-                            <td id="case1" class="case"></td>
-                            <td class="eau"></td>
-                            <td class="eau"></td>
-                            <td class="eau"></td>
-                            <td class="eau"></td>
-                            <td id="case8" class="case"></td>
-                        </tr>
-                        <tr id="ligne3">
-                            <td id="case0" class="case"></td>
-                            <td class="plongeoir"></td>
-                            <td class="eau"></td>
-                            <td class="eau"></td>
-                            <td class="eau"></td>
-                            <td id="case9" class="case"></td>
-                        </tr>
-                        <tr id="ligne4">
-                            <td id="case17" class="case"></td>
-                            <td class="eau"></td>
-                            <td class="eau"></td>
-                            <td class="eau"></td>
-                            <td class="eau"></td>
-                            <td id="case10" class="case"></td>
-                        </tr>
-                        <tr id="ligne5">
-                            <td id="case16" class="case"></td>
-                            <td id="case15" class="case"></td>
-                            <td id="case14" class="case"></td>
-                            <td id="case13" class="case"></td>
-                            <td id="case12" class="case"></td>
-                            <td id="case11" class="case"></td>
-                        </tr>
-                    </table>
-                </div>
-                <div id="demasquer">
-                    <select id="select-joueurs"></select>
-                    <select id="select-couleurs"></select>
-                    <button id="bouton-demasquer">demasquer</button>
-                </div>
-                <div id = "listeJoueurs"></div>
-            
-            </div>
-        </div>
-        <div id="divChat">
-            
-        </div>
+        </div>        
     </div>
 
+    <!-- ECRAN DE A PROPOS -->
+    <div id = "ecran-a-propos" class="ecran cacher" >
+        <div class="container text-center">
+            <div class="row-1">
+                <button id="b-retour-a-propos" class="col btn btn-outline-primary">Retour au menu</button>
+            </div>
+        </div>
+    </div>  
+
+
+
+    <!-- include pour Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
   </body>
 
 

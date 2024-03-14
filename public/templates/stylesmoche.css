@@ -1,0 +1,191 @@
+/* HEADER */
+
+header{
+    text-align: center;
+    height: 10%;
+}
+
+#titre{
+    font-size: 60px;
+    font-weight: bold;
+    color: rgb(49, 49, 197);
+}
+
+
+
+/* INDEX */
+
+div#pseudo{
+    margin: 15px;
+    text-align: center;
+}
+
+div#rejoindre{
+    margin: 15px;
+    text-align: center;
+}
+
+div#creer{
+    margin: 15px;
+    text-align: center;
+}
+
+
+#divRoomJeu{
+    width: 80%;
+}
+
+#roomEtChat{
+    display: flex;
+    height: 100%;
+}
+
+
+/* CHAT */
+
+#divChat{
+    width: 20%;
+    height: 85vh;
+    border: solid 1px rgb(63, 63, 63);
+    overflow-y: auto;
+}
+
+
+/* ROOM */
+
+div#ajouter-bot{
+    margin: 15px;
+    text-align: center;
+}
+
+
+
+/* PLOUF PARTY */
+
+table {
+    border-collapse: collapse;
+    margin: auto;
+}
+
+td {
+    text-align: center;
+    width: 50px;
+    height: 50px;
+}
+
+td.eau {
+    background-color: rgb(32, 136, 255);
+}
+
+td.case {
+    border: 1px solid #000;
+    background-color: lightgray;
+}
+
+[class*="pion"] {
+    width: 50px;
+    height: 50px;
+    
+}
+
+[class*="color-r"] {
+    background-color: red;
+}
+[class*="color-v"] {
+    background-color: green;
+}
+[class*="color-b"] {
+    background-color: blue;
+}
+[class*="color-m"] {
+    background-color: magenta;
+}
+[class*="color-c"] {
+    background-color: cyan;
+}
+[class*="color-j"] {
+    background-color: yellow;
+}
+
+td.direction {
+background-color: black;
+}
+
+td.plongeoir{
+    border: 1px solid #000;
+    border-left: none;
+    background-color: lightgray;
+}
+
+td#case0{
+    border: 1px solid #000;
+    border-right: none;
+}
+
+#joueurActu{
+    background-color: #dddddd;
+}
+
+#interface{
+    text-align: center;
+    padding: 10px;
+    padding-bottom: 20px;
+}
+
+#demasquer{
+    text-align: center;
+    padding: 10px;
+}
+
+
+div.cacher{
+    display: none !important;
+}
+
+
+div#ajouter-bot{
+    text-align: left;
+    display: flex;
+}
+
+div#diffBot > button{
+    margin-left: 5px;
+}
+
+div#liste-des-joueurs{
+    text-align: left;
+}
+
+div#bouton-pret{
+    text-align: center;
+}
+
+button#pret{
+    width: 80px;
+    height : 50px;
+    font-size: 20px;
+}
+
+.pretT{
+    background-color: green;
+}
+
+span#indicationCouleur{
+    display: inline-block;
+    width: 10px; 
+    height: 10px; 
+    border-radius: 50%; 
+    background-color: rgb(135, 135, 135); 
+}
+
+#FinPartie {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column; 
+    margin-bottom: 50px;
+}
+
+.Gagnant {
+    text-align: center;
+}

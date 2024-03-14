@@ -1,86 +1,179 @@
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: auto;
+}
+
+.fond-eau{
+    background-image: url(../data/eau-piscine.webp) ;
+    background-repeat: repeat;
+    background-position: center;
+}
+
+.fond-sol{
+    background-image: url(../data/sol.png);
+    background-repeat: repeat;
+    background-size: 200px;
+}
+
+/* GENERAL */
+
+.cacher{
+    display: none !important;
+}
+
+.inverse{
+    transform: scaleX(-1);
+}
+
 /* HEADER */
 
 header{
-    text-align: center;
-    height: 10%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url(../data/parasol.png);
+    background-size: auto 100%;
+    background-position: center;
+    background-repeat: repeat;
+    padding-bottom: 3%;
 }
 
-#titre{
-    font-size: 60px;
-    font-weight: bold;
-    color: rgb(49, 49, 197);
+img#titre{
+    width: 30%;
+    height:auto;
+}
+
+header > img{
+    width: 5%;
+    height:auto;
+}
+
+#icone-header{
+    width: 60%;
+    height:auto;
+}
+
+#btn-header{
+    width: 6%;
+}
+
+#offcanvasRegles{
+    background-color: #bde7ff;
+}
+
+#offcanvasReglesHeader{
+    background-color: #a6deff;
+}
+
+/* MENU */
+#roomJoin{
+    width: 50% !important;
+}
+
+#creer-rejoindre-partie > div{
+    background-color: rgba(171, 228, 255, 0.5);
+    border-radius: 10px; 
+    
 }
 
 
+/* CONNEXION */
 
-/* INDEX */
 
-div#pseudo{
-    margin: 15px;
-    text-align: center;
+
+#ecran-connexion{
+    
 }
 
-div#rejoindre{
-    margin: 15px;
-    text-align: center;
+.bouee-canard{
+    width: 100px;
+    height: auto;
 }
 
-div#creer{
-    margin: 15px;
-    text-align: center;
+.transparent{
+    opacity: 0.1;
+}
+
+.pretT{
+    background-color: green !important;
 }
 
 
-#divRoomJeu{
-    width: 80%;
-}
+/* PARTIE */
+
 
 #roomEtChat{
-    display: flex;
-    height: 100%;
+
 }
 
 
 /* CHAT */
 
+#roomEtChat{
+}
+
 #divChat{
-    width: 20%;
-    height: 85vh;
-    border: solid 1px rgb(63, 63, 63);
+    background-color: rgba(255, 255, 255, 0.5);
+
+    border-radius: 10px; 
+}
+
+
+#chat{
+}
+
+#messages-chat{
+    max-height: 300px;
     overflow-y: auto;
 }
 
 
+
 /* ROOM */
-
-div#ajouter-bot{
-    margin: 15px;
-    text-align: center;
-}
-
 
 
 /* PLOUF PARTY */
 
-table {
-    border-collapse: collapse;
-    margin: auto;
+#plateau{
+    
 }
 
-td {
+#tab-plateau {
+    
+    background-image: url(../data/piscine.png);
+    background-size: cover;
+    display: grid;
+  
+    /*border: 1px solid black;*/
+}
+
+#tab-plateau > div {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+}
+#tab-plateau > div > div {
+    aspect-ratio: 1;
+  
+    /*border: 1px solid black;*/
+}
+
+div.case {
+    /*border: 1px solid #000;*/
     text-align: center;
-    width: 50px;
-    height: 50px;
 }
 
+#img-plongeoir{
+    height: 60px;
+    position: absolute;
+}
+/*
 td.eau {
     background-color: rgb(32, 136, 255);
-}
-
-td.case {
-    border: 1px solid #000;
-    background-color: lightgray;
-}
+}*/
 
 [class*="pion"] {
     width: 50px;
@@ -107,10 +200,10 @@ td.case {
     background-color: yellow;
 }
 
-td.direction {
-background-color: black;
+.direction {
+    background-color: black;
 }
-
+/*
 td.plongeoir{
     border: 1px solid #000;
     border-left: none;
@@ -121,7 +214,7 @@ td#case0{
     border: 1px solid #000;
     border-right: none;
 }
-
+*/
 #joueurActu{
     background-color: #dddddd;
 }
@@ -138,37 +231,8 @@ td#case0{
 }
 
 
-div.cacher{
-    display: none !important;
-}
 
 
-div#ajouter-bot{
-    text-align: left;
-    display: flex;
-}
-
-div#diffBot > button{
-    margin-left: 5px;
-}
-
-div#liste-des-joueurs{
-    text-align: left;
-}
-
-div#bouton-pret{
-    text-align: center;
-}
-
-button#pret{
-    width: 80px;
-    height : 50px;
-    font-size: 20px;
-}
-
-.pretT{
-    background-color: green;
-}
 
 span#indicationCouleur{
     display: inline-block;

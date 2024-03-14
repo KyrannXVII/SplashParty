@@ -149,6 +149,12 @@ const estCoupPrecedentInverse = (depart, arrivee,partie) => {
         return false;
 }
 
+//un bot donne un pion et un sens il faut verifié qu'il puisse bien jouer cette combinaison
+const estCoupLegalBot =(depart,sens,partie)=>{
+    const caseArrivee = getCaseArrivee(depart, sens, partie.plateau);
+    return !estCoupPrecedentInverse(depart,caseArrivee,partie); 
+}
+exports.estCoupLegalBot = estCoupLegalBot;
 
 /**
  * Déplace un pion selon les règles du jeu établies.
@@ -158,10 +164,14 @@ const estCoupPrecedentInverse = (depart, arrivee,partie) => {
 exports.deplacer = (caseDepart, sens, partie) => {
     let message;
     let $plateau = partie.plateau
+    console.log(`Case Depart : ${caseDepart}`);
     let caseArrivee = getCaseArrivee(caseDepart, sens, $plateau);
+    console.log(`Case Arrivee : ${caseArrivee}`);
     //if (! estCoupPrecedentInverse(caseDepart,caseArrivee)){
     message = `${partie.listeJoueur[partie.aQuiLeTour].username} à déplacé un pion ${motEntierCouleurs(partie.plateau[caseDepart].couleur)}`;
     if ($plateau[caseArrivee] != $caseVide) {
+        console.debug(`Case Arrivee : `)
+        console.debug($plateau[caseArrivee])
         message += ` en éliminant un pion ${motEntierCouleurs(partie.plateau[caseArrivee].couleur)}`
         eliminerPion(caseArrivee,partie); 
     }
@@ -172,10 +182,6 @@ exports.deplacer = (caseDepart, sens, partie) => {
     // sauvegarde le coup
     partie.coupPrecedent = [caseDepart, caseArrivee];
     //console.debug(coupPrecedent);
-
-    
-
-
     // Verifie si la partie est finie
     if(partieFinie(partie.listeJoueur)){
         console.log("Partie terminée");
@@ -405,7 +411,7 @@ function calculerGagnant(partie){
     let joueur1;
     for(let i=0; i<partie.listeJoueur.length; i++){
         if(partie.listeJoueur[i].nbPions > 0){
-            if(joueur1 == null){ // on garde de coté le joueur1 pour comparer plus tard
+            if(joueur1 == null){ // on garde de coté le joueur1 pour comparer plus tard2
                 joueur1 = partie.listeJoueur[i];
             }
             else{
