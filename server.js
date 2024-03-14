@@ -238,7 +238,7 @@ io.on("connection", (socket) => {
         liste_username,
       );
       io.in(room.id).emit("FinPartie", finPartie);
-      broadCastBotFinPartie();
+      broadCastBotFinPartie(room);
     } else {
       const liste_username = room.partie.listeJoueur.map(
         (joueur) => joueur.username,
@@ -344,7 +344,7 @@ const broadCastBotActu = (room, plateau, denoncer) => {
 };
 
 //Permet de remettre les pions des bots à 3 pour relancer partie
-const broadCastBotFinPartie = () => {
+const broadCastBotFinPartie = (roostar ecouterum) => {
   room.players.forEach((element) => {
     if (element.estUnBot) {
     //  console.log(element.username);
@@ -395,7 +395,7 @@ const faireJouerBot = async (room,finPartie_) => {
   }
   if (finPartie) {
     io.in(room.id).emit("FinPartie", finPartie);
-    broadCastBotFinPartie();
+    broadCastBotFinPartie(room);
   }
   //return finPartie
 
