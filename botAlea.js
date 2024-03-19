@@ -19,11 +19,7 @@ class BotAlea {
      * @param {Plateau} plt Le plateau de jeu.
      * @param {Boolean} denonciation True si denonciation au dernier tour.
      */
-    maj(plt, denonciation){
-        if(!denonciation){
-            this.plateauLocal = plt;
-        }
-        //BYPASS POUR BOT ALEA POUR TEST SINON IL JOUE DES PIONS QUI N'EXISTES PLUS
+    maj(plt, coupPrecedant){
         this.plateauLocal = plt;
     }
 

@@ -19,6 +19,13 @@ body, html {
 
 /* GENERAL */
 
+@font-face {
+    font-family: 'MrsBeasleyRegular';
+    src: url('/data/Mrs Beasley.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal; 
+  }
+
 .cacher{
     display: none !important;
 }
@@ -41,6 +48,18 @@ header{
     padding-bottom: 3%;
 }
 
+#texte-titre{
+    font-family: 'MrsBeasleyRegular';
+    color: rgb(75, 156, 222);
+    text-shadow: 
+      -2px -2px 0 #113d61,
+      2px -2px 0 #113d61,
+      -2px 2px 0 #113d61,
+      2px 2px 0 #113d61;
+    font-size: 80px;
+    padding: 8px;
+}
+
 img#titre{
     width: 30%;
     height:auto;
@@ -60,14 +79,6 @@ header > img{
     width: 6%;
 }
 
-#offcanvasRegles{
-    background-color: #bde7ff;
-}
-
-#offcanvasReglesHeader{
-    background-color: #a6deff;
-}
-
 /* MENU */
 #roomJoin{
     width: 50% !important;
@@ -85,7 +96,6 @@ header > img{
 
 
 #ecran-connexion{
-    
 }
 
 .bouee-canard{
@@ -101,6 +111,10 @@ header > img{
     background-color: green !important;
 }
 
+#b-pret-roomjeu{
+    /*font-family: 'MrsBeasleyRegular';*/
+}
+
 
 /* PARTIE */
 
@@ -109,10 +123,21 @@ header > img{
 
 }
 
+/* FIN PARTIE */
+
+#ecran-fin-partie-haut{
+    padding-bottom: 20px;
+}
+
+#ecran-fin-partie-bas{
+    padding-top: 20px;
+}
+
 
 /* CHAT */
 
 #roomEtChat{
+
 }
 
 #divChat{
@@ -146,6 +171,8 @@ header > img{
     background-image: url(../data/piscine.png);
     background-size: cover;
     display: grid;
+    
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   
     /*border: 1px solid black;*/
 }
@@ -164,20 +191,21 @@ header > img{
 div.case {
     /*border: 1px solid #000;*/
     text-align: center;
+    
 }
 
 #img-plongeoir{
-    height: 60px;
-    position: absolute;
+    
 }
 /*
 td.eau {
     background-color: rgb(32, 136, 255);
 }*/
 
-[class*="pion"] {
+.pion {
     width: 50px;
     height: 50px;
+    border-radius: 50%;
     
 }
 
@@ -225,6 +253,19 @@ td#case0{
     padding-bottom: 20px;
 }
 
+span#indicationCouleur{
+    display: inline-block;
+    width: 20px; 
+    height: 20px; 
+    margin-left: 15px;
+    border-radius: 50%; 
+    background-color: rgb(135, 135, 135); 
+}
+
+span#indicationCouleur:hover{
+
+}
+
 #demasquer{
     text-align: center;
     padding: 10px;
@@ -234,13 +275,6 @@ td#case0{
 
 
 
-span#indicationCouleur{
-    display: inline-block;
-    width: 10px; 
-    height: 10px; 
-    border-radius: 50%; 
-    background-color: rgb(135, 135, 135); 
-}
 
 #FinPartie {
     display: flex;
@@ -253,3 +287,75 @@ span#indicationCouleur{
 .Gagnant {
     text-align: center;
 }
+
+
+/* ANIMATIONS */
+
+.animation{
+    transition: 0.5s;
+}
+
+
+/* REGLES */ 
+
+#offcanvasRegles{
+    background-color: #bde7ff;
+}
+
+#offcanvasReglesHeader{
+    background-color: #a6deff;
+}
+
+/* DIALOG ELIMINATION */
+
+.ta-classe[open] {
+    position: fixed;
+    top: calc(50% - 1em);
+    left: 0;
+    width: 100%;
+    height: 2em;
+    background: rgba(255, 0, 0, 0.164);
+    border: none;
+    display: grid;
+    place-content: center;
+    font-size: 4em;
+    padding: 0;
+
+    color: red;
+    font-weight: bold;
+    text-shadow: 
+      -2px -2px 0 #000000,
+      2px -2px 0 #000000,
+      -2px 2px 0 #000000,
+      2px 2px 0 #000000;
+}
+
+
+/* DECORATION */
+
+.decor-ballon{
+    max-height: 60px;
+    max-width: 60px;
+}
+
+.decor-transat{
+    height: 80px;
+    width: 160px;
+}
+
+.decor-parasol{
+    height: 180px;
+    width: 180px;
+}
+
+.ecrans{
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: auto;
+}
+
+.grid{
+    grid-column: 1;
+    grid-row: 1;
+}
+

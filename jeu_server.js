@@ -13,9 +13,10 @@ class Pion {
      * @param {string} couleur
      * @param {unsigned int} deplacement
      */
-    constructor(couleur, deplacement){
+    constructor(couleur, deplacement, id){
         this.deplacement = deplacement;
         this.couleur = couleur;
+        this.id = id
     }
 };
 
@@ -37,6 +38,7 @@ class Partie {
         this.plateau = plateau;
         this.coupPrecedent = undefined;
         this.aQuiLeTour = 0;
+        this.plusDeJoueurHumain =false;
     }
 }
 
@@ -86,7 +88,7 @@ exports.initPartie= (x, listeJoueur) => {
             while(estVide){
                 x = Math.floor(Math.random()*$taillePlateau);
                 if(plateau[x]==$caseVide){
-                    plateau[x] = new Pion($couleurs[y], i+1);
+                    plateau[x] = new Pion($couleurs[y], i+1, x);
                     estVide = false;
                 }
             }
@@ -183,7 +185,7 @@ exports.deplacer = (caseDepart, sens, partie) => {
     partie.coupPrecedent = [caseDepart, caseArrivee];
     //console.debug(coupPrecedent);
     // Verifie si la partie est finie
-    if(partieFinie(partie.listeJoueur)){
+    if(partieFinie(partie.listeJoueur) || partie.plusDeJoueurHumain){
         console.log("Partie terminée");
         console.log(partie);
         return [terminerPartie(partie), message];
@@ -208,7 +210,8 @@ exports.deplacer = (caseDepart, sens, partie) => {
  * @param {*} plateau Le plateau de jeu.
  * @returns {unsigned int} Case d'arrivée du pion sur la plateau.
  */
-function getCaseArrivee(casePion, sens, $plateau){
+const getCaseArrivee = (casePion, sens, $plateau) =>{
+    //console.log('getCaseArrivee' + ' ' +  casePion + " " + sens + " " + $plateau);
     //console.debug(`casePionA = ${casePion}`); 
     if(casePion >=0 && casePion < $taillePlateau){ // si le case est bien entre 0 et 19
         let caseArrivee;
@@ -237,6 +240,7 @@ function getCaseArrivee(casePion, sens, $plateau){
         return 0;
     }
 }
+exports.getCaseArrivee = getCaseArrivee;
 
 /**
  * Renvoie le joueur de la couleur donnée.
@@ -288,13 +292,14 @@ const eliminerJoueur = (joueur, partie) => {
 
     joueur.nbPions = 0;
 
-
+    const tabPionsElimines = [];
     for(i=0; i<$taillePlateau; i++){
         if(partie.plateau[i] != $caseVide){
             //console.debug("partie.plateau[i]");
             //console.debug(partie.plateau[i]);
             if(partie.plateau[i].couleur == $couleurs[joueur.color]){
                 partie.plateau[i] = $caseVide;
+                tabPionsElimines.push(i);
             }
         }
     }
@@ -302,6 +307,7 @@ const eliminerJoueur = (joueur, partie) => {
     console.log(`${joueur.username} est éliminé`);
     //console.debug(partie);
     //console.debug(joueur);
+    return tabPionsElimines
 }
 exports.eliminerJoueur = eliminerJoueur;
 
@@ -311,6 +317,7 @@ exports.demasquerJoueur = (partie, nomJoueur, couleur)=>{
     //console.debug(partie);
 
     let message;
+    let tabPionsElimines;
     
     let joueur;
     partie.listeJoueur.forEach(element => {
@@ -324,19 +331,19 @@ exports.demasquerJoueur = (partie, nomJoueur, couleur)=>{
     if(joueur.color == couleur){
         message = `${partie.listeJoueur[partie.aQuiLeTour].username} a voulu démasquer ${nomJoueur} comme étant ${motEntierCouleurs($couleurs[couleur])}, il avait raison !`;
         console.log(message);
-        eliminerJoueur(joueur, partie);
+        tabPionsElimines = eliminerJoueur(joueur, partie);
     }
     else{
         message = `${partie.listeJoueur[partie.aQuiLeTour].username} a voulu démasquer ${nomJoueur} comme étant ${motEntierCouleurs($couleurs[couleur])}, il avait tort !`;
         console.log(message);
-        eliminerJoueur(partie.listeJoueur[partie.aQuiLeTour], partie);
+        tabPionsElimines = eliminerJoueur(partie.listeJoueur[partie.aQuiLeTour], partie);
     }
     
     // Verifie si la partie est finie
-    if(partieFinie(partie.listeJoueur)){
+    if(partieFinie(partie.listeJoueur) || partie.plusDeJoueurHumain){
         console.debug("Partie terminée");
         console.debug(partie);
-        return [terminerPartie(partie), message];
+        return [terminerPartie(partie), message, tabPionsElimines];
     }
     else{
         //console.debug(`Avant changement de joueur : ${partie.aQuiLeTour}`)
@@ -346,7 +353,7 @@ exports.demasquerJoueur = (partie, nomJoueur, couleur)=>{
         //console.debug(partie.aQuiLeTour)
     }
 
-    return [false, message];
+    return [false, message, tabPionsElimines];
 };
 
 /**
@@ -384,7 +391,10 @@ const joueurSuivant = (partie)=>{
  */
 exports.aSonTour = (joueurATester,partie) => {
     //partie.listeJoueur.findIndex((joueur) => joueur.socketId ===joueurATester.socketId)
+    console.log(`A Son tour : `)
+    if(partieFinie(partie.listeJoueur) || partie.plusDeJoueurHumain) return (console.log(`A Son tour : fin de partie `),false);
     const indexJoueur = partie.listeJoueur.findIndex((joueur) => joueur.socketId ===joueurATester.socketId)
+    console.log(`A Son tour :indexJoueur = ${indexJoueur} // qui le tour = ${partie.aQuiLeTour}`)    
     return indexJoueur === partie.aQuiLeTour
 }
 
@@ -394,11 +404,16 @@ exports.aSonTour = (joueurATester,partie) => {
  * @returns {boolean} true si elle est finie, false sinon
  */
 function partieFinie(listeJoueur){
+    //console.debug("partie finie");
     let nbJoueursEnJeu = 0;
+    
     for(let i=0; i<listeJoueur.length; i++){
         if(listeJoueur[i].nbPions > 0) nbJoueursEnJeu++;
     }
 
+    //if (nbJoueursEnJeu <= 2) console.debug("partie finie");
+    console.debug(`Dans partieFinie: nbJoueursEnJeu = ${nbJoueursEnJeu}`)
+    console.debug(`Dans partieFinie: nbJoueursEnJeu <= 2 : ${nbJoueursEnJeu <= 2}`)
     return nbJoueursEnJeu <= 2;
 }
 

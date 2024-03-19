@@ -6,7 +6,8 @@ class player {
     this.roomId = undefined,
     this.color = undefined,
     this.ready = false,
-    this.nbPions = 3
+    this.nbPions = 3,
+    this.connecte = true
     }
 };
 let p =undefined;
@@ -62,6 +63,7 @@ socket.on("goRoom",()=>{
 socket.on("goRoom",(room)=>{
     /*Cache le div de connexion et affiche celui de la room */
     //console.log("bordel")
+    
     afficherRoom();
 
     /* affichage du numero de room */
@@ -195,9 +197,26 @@ console.log(`${p.username} a son tour ? ${monTour}`)
     socket.emit("deplacerPion",posiPion,direction,p.roomId)
 }
 
-socket.on("actualisePartie",(plateau,aquiletour,liste_joueur_sans_couleur) => {
+socket.on("actualisePartie",async (plateau,aquiletour,liste_joueur_sans_couleur,action) => {
 // function afficher(plateau,aquiletour,listejoueur_sanscouleur)
     
+console.debug("action");
+console.debug(action);
+    if(action != undefined){
+        if(action[0] == 0){ // déplacement
+            animation(action[1], action[2]);
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            resetAnim(action[1]);
+            resetAnim(action[2]);
+        }
+        if(action[0] == 1){ // démasquage
+            action[1].forEach(element => {
+                animationElimine(element);
+            });
+            await new Promise(resolve => setTimeout(resolve, 2000));
+        }
+    }
+
     afficher(plateau,aquiletour,liste_joueur_sans_couleur, p.roomId)
     activerPion();
     })
@@ -221,7 +240,6 @@ socket.on("FinPartie",(resultat)=>{
 
     // Reset le stat des joueurs
     p.ready = false;
-    socket.emit("actualiseJoueur",p);
     pretB.classList.remove("pretT");
 })
 
@@ -232,6 +250,8 @@ socket.on("Error",(message) =>{
 
 
 const relancerPartie = () => {
+
+    socket.emit("actualiseJoueur",p);
     afficherRoom();
 }
 
