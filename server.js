@@ -1,5 +1,6 @@
 const { Socket } = require("socket.io");
 const express = require("express");
+const fs = require('fs'); // TEST 
 const app = express();
 const http = require("http").createServer(app);
 const path = require("path");
@@ -140,7 +141,7 @@ io.on("connection", (socket) => {
 
   socket.on("joueurPret", (player) => {
     try{
-
+      createFileWithHelloWorld(); // TEST LOG SERVEUR
     console.debug("PRET!!");
     actualiserJoueur(player);
     let room = rooms.find((room) => room.id === player.roomId);
@@ -543,3 +544,11 @@ const faireJouerBot = async (room, finPartie_) => {
 const joueurNonBot = (listeJoueur) => {
   return listeJoueur.every((j) => j.estUnBot);
 };
+
+
+function createFileWithHelloWorld() {
+  fs.writeFile('/opt/render/log/HelloWorld.txt', 'Hello World', (err) => {
+      if (err) throw err;
+      console.log('The file has been saved!');
+  });
+}
