@@ -40,7 +40,7 @@ io.on("connection", (socket) => {
         //console.debug(player.roomId);
         player.host = true;
         player.sonTour = true;
-        console.log(`room crée : ${room.id}, host ${player.username}`);
+        console.log(`${DateLog()} -> room crée : ${room.id}, host ${player.username}`);
       } else {
         /* rejoindre une room */
         console.log(`Room a rejoindre : ${player.roomId}`);
@@ -63,7 +63,7 @@ io.on("connection", (socket) => {
       /* broadcast pour actualiser la liste des joueurs d'une room */
       io.in(room.id).emit("actuRoom", room);
     } catch (error) {
-      console.error(`Erreur lors de playerData ${error}`);
+      console.error(`${DateLog()} -> Erreur lors de playerData ${error}`);
     }
   });
 
@@ -135,13 +135,13 @@ io.on("connection", (socket) => {
         }
       }
     } catch (error) {
-      console.error(`Erreur lors de disconnect ${error}`);
+      console.error(`${DateLog()} -> Erreur lors de disconnect ${error}`);
     }
   });
 
   socket.on("joueurPret", (player) => {
     try{
-      createFileWithHelloWorld(); // TEST LOG SERVEUR
+      createFileWithHelloWorld(); // TEST LOG SERVEUR²²²²
     console.debug("PRET!!");
     actualiserJoueur(player);
     let room = rooms.find((room) => room.id === player.roomId);
@@ -177,7 +177,7 @@ io.on("connection", (socket) => {
       io.in(room.id).emit("actuRoom", room);
     }
   } catch(error){
-    console.error(`Erreur lors de  ${error}`);
+    console.error(`${DateLog()} -> Erreur lors de  ${error}`);
   }
 
 });
@@ -189,7 +189,7 @@ io.on("connection", (socket) => {
     const player = room.players.find((player) => player.socketId === sockId);
     socket.emit("retourGetCouleur", player.color);
     } catch {
-      console.error(`Erreur lors de getCouleur ${error}`);
+      console.error(`${DateLog()} -> Erreur lors de getCouleur ${error}`);
     }
   });
 
@@ -201,7 +201,7 @@ io.on("connection", (socket) => {
     const depPion = retour[0];
     socket.emit("retourDeplacementPossible", deplacementPossible, depPion);
     } catch{
-      console.error(`Erreur lors de deplacementPossible ${error}`);
+      console.error(`${DateLog()} -> Erreur lors de deplacementPossible ${error}`);
     }
 
   });
@@ -213,7 +213,7 @@ io.on("connection", (socket) => {
     //console.debug(retour);
     socket.emit("retourEstCoupPrecedentInverse", retour);
     }catch {
-      console.error(`Erreur lors de estCoupPrecedentInverse ${error}`);
+      console.error(`${DateLog()} -> Erreur lors de estCoupPrecedentInverse ${error}`);
     }
   });
 
@@ -255,7 +255,7 @@ io.on("connection", (socket) => {
       faireJouerBot(room, finPartie);
     }
     } catch(error){
-      console.error(`Erreur lors de deplacerPion ${error}`);
+      console.error(`${DateLog()} -> Erreur lors de deplacerPion ${error}`);
     }
   });
 
@@ -266,7 +266,7 @@ io.on("connection", (socket) => {
     console.log(`${joueur.username} a son tour ? ${retour}`);
     socket.emit("RetourMonTour", retour);
     }catch(error){
-      console.error(`Erreur lors de MonTour ${error}`);
+      console.error(`${DateLog()} -> Erreur lors de MonTour ${error}`);
     }
   });
 
@@ -279,7 +279,7 @@ io.on("connection", (socket) => {
     const room = rooms.find((room) => room.id === joueur.roomId);
     io.in(room.id).emit("actuRoom", room);
   } catch{
-    console.error(`Erreur lors de actualiserJoueur ${error}`);
+    console.error(`${DateLog()} -> Erreur lors de actualiserJoueur ${error}`);
   }
   });
 
@@ -305,7 +305,7 @@ io.on("connection", (socket) => {
     melangerTableau(joueurs);
     socket.emit("retourListesJoueursEtCouleursEnJeu", couleurs, joueurs);
     }catch(error){
-      console.error(`Erreur lors de listesJoueursEtCouleursEnJeu ${error}`);
+      console.error(`${DateLog()} -> Erreur lors de listesJoueursEtCouleursEnJeu ${error}`);
     }
   });
 
@@ -357,7 +357,7 @@ io.on("connection", (socket) => {
     }
 
   } catch(error){
-    console.error(`Erreur lors de demasquer ${error}`);
+    console.error(`${DateLog()} -> Erreur lors de demasquer ${error}`);
   }
     //console.debug("room.partie a la fin de demasquer");
     //console.debug(room.partie);
@@ -368,7 +368,7 @@ io.on("connection", (socket) => {
     const room = rooms.find((room) => room.id === roomId);
     io.in(room.id).emit("messageChat", `${username} : ${message}`, false);
     }catch(error){
-      console.error(`Erreur lors de envoyerChat ${error}`);
+      console.error(`${DateLog()} -> Erreur lors de envoyerChat ${error}`);
     }
   });
 
@@ -376,7 +376,7 @@ io.on("connection", (socket) => {
     try{
     room = rooms.find((r) => r.id === roomId);
     if (room.players.length === 6) {
-      socket.emit("Error", "ROOM PLEINE !");
+      socket.emit("${DateLog()} -> Error", "ROOM PLEINE !");
       return;
     }
     room.nbBot++;
@@ -384,7 +384,7 @@ io.on("connection", (socket) => {
     room.players.push(bot);
     io.in(room.id).emit("actuRoom", room);
     }catch(error){
-      console.error(`Erreur lors de AjouterBot ${error}`);
+      console.error(`${DateLog()} -> Erreur lors de AjouterBot ${error}`);
     }
   });
   /*
@@ -536,7 +536,7 @@ const faireJouerBot = async (room, finPartie_) => {
   }
   }
   catch(error){
-    console.error(`Erreur lors de faireJouerBot ${error}`);
+    console.error(`${DateLog()} -> Erreur lors de faireJouerBot ${error}`);
 }
   //return finPartie
 };
@@ -546,9 +546,20 @@ const joueurNonBot = (listeJoueur) => {
 };
 
 
+
+
+// TEST SERVEUR LOG
 function createFileWithHelloWorld() {
   fs.writeFile('/opt/render/log/HelloWorld.txt', 'Hello World', (err) => {
       if (err) throw err;
       console.log('The file has been saved!');
   });
 }
+
+function DateLog() {
+  const date = new Date();
+  const options = { timeZone: 'Europe/Paris', hour12: false };
+  return date.toLocaleString('fr-FR', options);
+}
+
+console.log(DateLog());
