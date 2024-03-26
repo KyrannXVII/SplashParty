@@ -27,55 +27,61 @@ let rooms = [];
 */
 /*Gestion socket*/
 io.on("connection", (socket) => {
-  console.log(`Socket : ${socket.id}`);
+  console.log(`Socket connecte: ${socket.id}`);
   socket.on("playerData", (player) => {
-    console.log(`Player : ${player.username}`);
-    let room;
-    /* création de la room */
-    if (player.roomId === undefined) {
-      room = createRoom(player);
-      player.roomId = room.id;
-      //console.debug(player.roomId);
-      player.host = true;
-      player.sonTour = true;
-      console.log(`room crée : ${room.id}, host ${player.username}`);
-    } else {
-      /* rejoindre une room */
-      console.log(`Room a rejoindre : ${player.roomId}`);
-      room = rooms.find((r) => r.id === player.roomId);
-      if (room === undefined) {
-        socket.emit("Error", "room inconnu");
-        return;
+    try {
+      console.log(`Player : ${player.username}`);
+      let room;
+      /* création de la room */
+      if (player.roomId === undefined) {
+        room = createRoom(player);
+        player.roomId = room.id;
+        //console.debug(player.roomId);
+        player.host = true;
+        player.sonTour = true;
+        console.log(`room crée : ${room.id}, host ${player.username}`);
+      } else {
+        /* rejoindre une room */
+        console.log(`Room a rejoindre : ${player.roomId}`);
+        room = rooms.find((r) => r.id === player.roomId);
+        if (room === undefined) {
+          socket.emit("Error", "room inconnu");
+          return;
+        }
+
+        if (room.players.length === 6) {
+          socket.emit("Error", "ROOM PLEINE !");
+          return;
+        }
+        room.players.push(player);
       }
 
-      if (room.players.length === 6) {
-        socket.emit("Error", "ROOM PLEINE !");
-        return;
-      }
-      room.players.push(player);
+      socket.emit("goRoom", room);
+      /* regroupe les socket dans les room pour broacast */
+      socket.join(room.id);
+      /* broadcast pour actualiser la liste des joueurs d'une room */
+      io.in(room.id).emit("actuRoom", room);
+    } catch (error) {
+      console.error(`Erreur lors de playerData ${error}`);
     }
-
-    socket.emit("goRoom", room);
-    /* regroupe les socket dans les room pour broacast */
-    socket.join(room.id);
-    /* broadcast pour actualiser la liste des joueurs d'une room */
-    io.in(room.id).emit("actuRoom", room);
   });
 
   /* si socket deconnecter vire le jouer de la liste des joueur de la room*/
   socket.on("disconnect", () => {
-    let idxRoom = 0;
-    if (rooms.length > 0) {
-      for (let room of rooms) {
-        const idxPlayer = room.players.findIndex(
-          (player) => player.socketId === socket.id,
-        );
-        if (idxPlayer >= 0) {
-          //si le joueur est dans la room -> on a trouver la bonne room
-          //console.log(room.id);
+    try {
+      let idxRoom = 0;
+      if (rooms.length > 0) {
+        for (let room of rooms) {
+          const idxPlayer = room.players.findIndex(
+            (player) => player.socketId === socket.id,
+          );
+          if (idxPlayer >= 0) {
+            //si le joueur est dans la room -> on a trouver la bonne room
+            //console.log(room.id);
 
           if (room.partie !== undefined) {
            
+            const joueur = room.players[idxPlayer];
             const tabPionsElimines =  jeu.eliminerJoueur(room.players[idxPlayer], room.partie);
            // room.players[idxPlayer].connecte = false
             room.partie.nbJoueur--;
@@ -86,44 +92,56 @@ io.on("connection", (socket) => {
             console.debug(room.partie.listeJoueur)
             console.log(room.partie.aQuiLeTour);
 
-            console.debug(`Un joueur s'est deconnecté`)
-            if (joueurNonBot(room.players)) {
-              room.partie.plusDeJoueurHumain = true;
-              console.debug("ICI : on a plus de joueur humain ")
+              //room.partie.listeJoueur.splice(idxPlayer,1);
+              room.players.splice(idxPlayer, 1);
+              console.debug(room.partie.listeJoueur);
+              console.log(room.partie.aQuiLeTour);
+
+              console.debug(`Un joueur s'est deconnecté`);
+              if (joueurNonBot(room.players)) {
+                room.partie.plusDeJoueurHumain = true;
+                console.debug("ICI : on a plus de joueur humain ");
+              }
+
+              const partie = room.partie;
+
+              const liste_username = partie.listeJoueur.map(
+                (joueur) => joueur.username,
+              );
+              const plateau_secu = partie.plateau.map(securisation_pion);
+              console.log(plateau_secu);
+              io.in(room.id).emit("messageChat", `${joueur.username} s'est déconnnecté`, true);
+              io.in(room.id).emit(
+                "actualisePartie",
+                plateau_secu,
+                partie.aQuiLeTour,
+                liste_username,
+              );
+              broadCastBotActu(room, plateau_secu, [1, tabPionsElimines]); //agis comme un démasquage
+              faireJouerBot(room, false);
             }
+            
 
-            const partie = room.partie;
+            //room.players.splice(idxPlayer, 1);
+            console.debug(room.players);
+            io.in(room.id).emit("actuRoom", room);
 
-            const liste_username = partie.listeJoueur.map(
-              (joueur) => joueur.username,
-            );
-            const plateau_secu = partie.plateau.map(securisation_pion);
-            console.log(plateau_secu);
-            io.in(room.id).emit(
-              "actualisePartie",
-              plateau_secu,
-              partie.aQuiLeTour,
-              liste_username,
-            );
-            broadCastBotActu(room, plateau_secu, [1, tabPionsElimines]);  //agis comme un démasquage
-            faireJouerBot(room,false);
+            if (room.players.length === 0) {
+              rooms.splice(rooms.indexOf(room), 1);
+            }
+            break;
           }
-          
-          //room.players.splice(idxPlayer, 1);
-          console.debug(room.players);
-          io.in(room.id).emit("actuRoom", room);
-
-          if (room.players.length === 0) {
-            rooms.splice(rooms.indexOf(room), 1);
-          }
-
         }
       }
+    } catch (error) {
+      console.error(`Erreur lors de disconnect ${error}`);
     }
   });
 
   socket.on("joueurPret", (player) => {
-    console.log("PRET!!");
+    try{
+
+    console.debug("PRET!!");
     actualiserJoueur(player);
     let room = rooms.find((room) => room.id === player.roomId);
 
@@ -141,6 +159,7 @@ io.on("connection", (socket) => {
           (joueur) => joueur.username,
         );
         const plateau_secu = partie.plateau.map(securisation_pion);
+        io.in(room.id).emit("messageChat", "== NOUVELLE PARTIE ==", true);
         io.in(room.id).emit(
           "lancerPartie",
           plateau_secu,
@@ -156,31 +175,49 @@ io.on("connection", (socket) => {
       console.log("Tous les joueurs ne sont pas pret");
       io.in(room.id).emit("actuRoom", room);
     }
-  });
+  } catch(error){
+    console.error(`Erreur lors de  ${error}`);
+  }
+
+});
 
   //Envoie individuellement à chaque client sa couleur.
   socket.on("getCouleur", (sockId, roomId) => {
+    try{
     const room = rooms.find((room) => room.id === roomId);
     const player = room.players.find((player) => player.socketId === sockId);
     socket.emit("retourGetCouleur", player.color);
+    } catch {
+      console.error(`Erreur lors de getCouleur ${error}`);
+    }
   });
 
   socket.on("deplacementPossible", (positionPion, roomId) => {
+    try{
     const room = rooms.find((room) => room.id === roomId);
     const retour = jeu.getDepPossible(positionPion, room.partie); // getDepPossible renvoie [depDuPion, casePossible1, casePossible2]
     const deplacementPossible = [retour[1], retour[2]];
     const depPion = retour[0];
     socket.emit("retourDeplacementPossible", deplacementPossible, depPion);
+    } catch{
+      console.error(`Erreur lors de deplacementPossible ${error}`);
+    }
+
   });
 
   socket.on("estCoupPrecedentInverse", (posiPion, idxCase, roomId) => {
+    try{
     const room = rooms.find((room) => room.id === roomId);
     const retour = jeu.estCoupPrecedentInverse(posiPion, idxCase, room.partie);
     //console.debug(retour);
     socket.emit("retourEstCoupPrecedentInverse", retour);
+    }catch {
+      console.error(`Erreur lors de estCoupPrecedentInverse ${error}`);
+    }
   });
 
   socket.on("deplacerPion", async (posiPion, direction, roomId) => {
+    try{
     const room = rooms.find((room) => room.id === roomId);
     console.log(`posiPion : ${posiPion} direction : ${direction}`);
 
@@ -190,7 +227,7 @@ io.on("connection", (socket) => {
       room.partie.plateau,
     );
     let res = jeu.deplacer(posiPion, direction, room.partie);
-    finPartie = res[0];
+    finPartie = res[0] != false;
     let message = res[1];
 
     const partie = room.partie;
@@ -206,27 +243,49 @@ io.on("connection", (socket) => {
     broadCastBotActu(room, plateau_secu, [0, posiPion, caseArrivee]); ////////////////////////////////////////////////// FALSE CAR ASKIP PAS ENCORE DE DENON FAUT S'EN OCCUPER TA MERE!
     io.in(room.id).emit("messageChat", message, true);
 
-    faireJouerBot(room, finPartie);
+    if(finPartie){
+      const gagnant = res[0][0];
+      const estEgalite = res[0][1];
+      const messageFin = res[0][2];
+      io.in(room.id).emit("messageChat", messageFin, true);
+      io.in(room.id).emit("FinPartie", finPartie);
+      broadCastBotFinPartie(room);
+    }else{
+      faireJouerBot(room, finPartie);
+    }
+    } catch(error){
+      console.error(`Erreur lors de deplacerPion ${error}`);
+    }
   });
 
   socket.on("MonTour", (joueur) => {
+    try{
     const room = rooms.find((room) => room.id === joueur.roomId);
     const retour = jeu.aSonTour(joueur, room.partie);
     console.log(`${joueur.username} a son tour ? ${retour}`);
     socket.emit("RetourMonTour", retour);
+    }catch(error){
+      console.error(`Erreur lors de MonTour ${error}`);
+    }
   });
 
   //permet d'actualiser la room pour tout le monde au niveau client pour relancer
   //la game avec le status ready des joueurs mis a jour pour relancer la partie
   socket.on("actualiseJoueur", (joueur) => {
+    try{    
     actualiserJoueur(joueur);
+    console.debug(`PROBLEME NB PIONS = ${joueur.nbPions}`)
     const room = rooms.find((room) => room.id === joueur.roomId);
     io.in(room.id).emit("actuRoom", room);
+  } catch{
+    console.error(`Erreur lors de actualiserJoueur ${error}`);
+  }
   });
 
   socket.on("listesJoueursEtCouleursEnJeu", (roomId) => {
     //console.debug("roomId");
     //console.debug(roomId);
+    try{
     const room = rooms.find((room) => room.id === roomId);
     const couleurs = [];
     const joueurs = [];
@@ -244,16 +303,21 @@ io.on("connection", (socket) => {
     melangerTableau(couleurs);
     melangerTableau(joueurs);
     socket.emit("retourListesJoueursEtCouleursEnJeu", couleurs, joueurs);
+    }catch(error){
+      console.error(`Erreur lors de listesJoueursEtCouleursEnJeu ${error}`);
+    }
   });
 
   socket.on("demasquer", (nomJoueur, couleur, roomId) => {
     //console.debug("demasquer");
+    try {
+      
     const room = rooms.find((room) => room.id === roomId);
 
     //const demasquageVrai = jeu.demasquerJoueur(room.partie, nomJoueur, couleur);
 
     const res = jeu.demasquerJoueur(room.partie, nomJoueur, couleur);
-    finPartie = res[0];
+    finPartie = res[0] != false;
     const message = res[1];
     const tabPionsElimines = res[2];
     io.in(room.id).emit("messageChat", message, true);
@@ -269,6 +333,10 @@ io.on("connection", (socket) => {
         liste_username,
         [1, tabPionsElimines],
       );
+      const gagnant = res[0][0];
+      const estEgalite = res[0][1];
+      const messageFin = res[0][2];
+      io.in(room.id).emit("messageChat", messageFin, true);
       io.in(room.id).emit("FinPartie", finPartie);
       broadCastBotFinPartie(room);
     } else {
@@ -287,17 +355,24 @@ io.on("connection", (socket) => {
       faireJouerBot(room, finPartie);
     }
 
+  } catch(error){
+    console.error(`Erreur lors de demasquer ${error}`);
+  }
     //console.debug("room.partie a la fin de demasquer");
     //console.debug(room.partie);
   });
 
   socket.on("envoyerChat", (username, message, roomId) => {
+    try{
     const room = rooms.find((room) => room.id === roomId);
-
     io.in(room.id).emit("messageChat", `${username} : ${message}`, false);
+    }catch(error){
+      console.error(`Erreur lors de envoyerChat ${error}`);
+    }
   });
 
   socket.on("AjouterBot", (roomId) => {
+    try{
     room = rooms.find((r) => r.id === roomId);
     if (room.players.length === 6) {
       socket.emit("Error", "ROOM PLEINE !");
@@ -307,6 +382,9 @@ io.on("connection", (socket) => {
     let bot = new bots.BotAlea(`BOT${room.nbBot}`, roomId);
     room.players.push(bot);
     io.in(room.id).emit("actuRoom", room);
+    }catch(error){
+      console.error(`Erreur lors de AjouterBot ${error}`);
+    }
   });
   /*
             SUITE SOCKET ON ET EMIT
@@ -393,8 +471,10 @@ const broadCastBotFinPartie = (room) => {
 };
 
 const faireJouerBot = async (room, finPartie_) => {
+  try{
   const partie = room.partie;
   let finPartie = finPartie_;
+  let res;
   while (partie.listeJoueur[partie.aQuiLeTour].estUnBot && !finPartie) {
     const bot = partie.listeJoueur[partie.aQuiLeTour];
     let action;
@@ -428,7 +508,7 @@ const faireJouerBot = async (room, finPartie_) => {
       // si le bot veut denoncer
       await new Promise((r) => setTimeout(r, 2000));
       res = jeu.demasquerJoueur(room.partie, action[1], action[2]);
-      finPartie = res[0];
+      finPartie = res[0] != false;
       message = res[1];
     }
 
@@ -446,9 +526,17 @@ const faireJouerBot = async (room, finPartie_) => {
     io.in(room.id).emit("messageChat", message, true);
   }
   if (finPartie) {
+    const gagnant = res[0][0];
+    const estEgalite = res[0][1];
+    const messageFin = res[0][2];
+    io.in(room.id).emit("messageChat", messageFin, true);
     io.in(room.id).emit("FinPartie", finPartie);
     broadCastBotFinPartie(room);
   }
+  }
+  catch(error){
+    console.error(`Erreur lors de faireJouerBot ${error}`);
+}
   //return finPartie
 };
 

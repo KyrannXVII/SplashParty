@@ -1,5 +1,6 @@
 const $taillePlateau = 18;
 const $couleurs = ["r", "v", "b", "m", "c", "j"];
+const $caseVide = "O";
 
 class BotAlgo {
     constructor(name, roomId){
@@ -21,29 +22,35 @@ class BotAlgo {
      * @param {Boolean} denonciation True si denonciation au dernier tour.
      */
     maj(plt, coupPrecedant){
-        if(coupPrecedant[0] === 0){
-            deplacementPionMaj(coupPrecedant[1], (coupPrecedant[1]+coupPrecedant[2]).mod(4));
+        if(coupPrecedant[0] === 0){ //pas une dénonciation au coup d'avant
+            this.plateauLocal.deplacementPionMaj(coupPrecedant[1], (+coupPrecedant[1] + +coupPrecedant[2]).mod(4));
         } 
         this.plateauLocal = new PlateauBot(plt);
-        this.plateauLocal.nivDangerMaj();
     }
     /**
      * @return Un array de : [bool : vrai si dénonciation, unsigned int : index du tableau du pion à déplacer, bool : sens]
      */
     jouer(){
-        indexPionLePlusDangereux = 0;
+        this.plateauLocal.nivDangerMajAll();
+        let indexPionLePlusDangereux = 0;
         //trouver le pion le plus dangereux
         for(let i = 1; i < $taillePlateau; i++){
-            if(this.plateauLocal.pions[i].nivDanger > this.plateauLocal.pions[pionLePlusDangereux].nivDanger){
-                pionLePlusDangereux = i;
+            if(this.plateauLocal.pions[i].nivDanger > this.plateauLocal.pions[indexPionLePlusDangereux].nivDanger){
+                indexPionLePlusDangereux = i;
             }
         }
         let mouvementPossible = [];
         //parcous à +-3 du pion
-        probaMax = 0;
+        let probaMax = 0;
         for(let i = 1; i < 3; i++){
-            probaPionPlus = this.plateauLocal.pions[(indexPionLePlusDangereux + i).mod($taillePlateau)].probaDeplacement[i];
-            probaPionMoins = this.plateauLocal.pions[(indexPionLePlusDangereux - i).mod($taillePlateau)].probaDeplacement[i];
+            let probaPionPlus = 0
+            if(this.plateauLocal.pions[(indexPionLePlusDangereux + i).mod($taillePlateau)] !== $caseVide){
+                probaPionPlus = this.plateauLocal.pions[(indexPionLePlusDangereux + i).mod($taillePlateau)].probaDeplacement[i-1];
+            }
+            let probaPionMoins = 0
+            if(this.plateauLocal.pions[(indexPionLePlusDangereux - i).mod($taillePlateau)] !== $caseVide){
+                probaPionMoins = this.plateauLocal.pions[(indexPionLePlusDangereux - i).mod($taillePlateau)].probaDeplacement[i-1];
+            }
             probaMax = Math.max(probaMax, probaPionPlus, probaPionMoins);
             if(probaPionPlus != 0)
             {
@@ -54,18 +61,18 @@ class BotAlgo {
                 mouvementPossible.push({proba: probaPionPlus , coup: [0, i, true]});
             }
         }
-        //test coup precedant.
-        mouvementPossible.forEach(element => { 
-            if(element.proba < probaMax){
-                element.pop();
-            } 
-        });
+        //TODO test coup precedant
+        for(let i = 0; i < mouvementPossible.length; i++){
+            if(mouvementPossible[i].proba < probaMax){
+                mouvementPossible.splice(i, 1);
+            }
+        }
         if(mouvementPossible.length > 0){
-            alea = Math.random().mod(mouvementPossible.length);
+            const alea = Math.round((Math.random() * mouvementPossible.length));
             return mouvementPossible[alea].coup;
         }
         else{
-            alea = (Math.random() < 0.5);
+            const alea = (Math.random() < 0.5);
             return [0, indexPionLePlusDangereux, alea];
         }
     }
@@ -87,16 +94,28 @@ class PionBot {
 
 class PlateauBot {
     constructor(plateau, color){
-        this.nivDanger = [];
-        this.equipePion = [[],[]];
-        this.pions = [];
+        this.nivDanger = new Array($taillePlateau);
+        this.colorBot = color;
+        this.equipePion = new Array($couleurs.length);
+        for(let i = 0; i < $couleurs.length; i++){
+            this.equipePion[i] = new Array();
+        }
+        this.infoDeplacementPion = new Array($couleurs.length);
+        for(let i = 0; i < $couleurs.length; i++){
+            this.infoDeplacementPion[i] = new Array();
+        }
+        this.pions = new Array($taillePlateau);
         for(let i = 0; i < $taillePlateau; i++){
-            this.nivDanger.push(0);
-            let pion = new PionBot(plateau[i]);
-            this.pions.push(pion);
-            this.equipePion[$couleurs.indexOf(pion.couleur)].push(pion);
-            this.nivDangerMaj();
-            this.colorBot = color
+            this.pions[i] = $caseVide;
+        }
+        for(let i = 0; i < $taillePlateau; i++){
+            this.nivDanger[i] = 0;
+            if(plateau[i] !== $caseVide){
+                let pion = new PionBot(plateau[i]);
+                this.pions[i] = pion;
+                const colorIndex = $couleurs.indexOf(pion.couleur);
+                this.equipePion[colorIndex].push(pion);
+            }
         }
     }
 
@@ -110,20 +129,21 @@ class PlateauBot {
         pion.probaDeplacement[0] = 0;
         pion.probaDeplacement[1] = 0;
         pion.probaDeplacement[2] = 0;
-        pion.probaDeplacement[deplacement-1] = 100;
         let couleur = this.pions[indexCasePlateau].couleur;
         this.infoDeplacementPion[$couleurs.indexOf(couleur)].push(deplacement)
         for(let i = 0; i < 3; i++){
             //pas de division par 0 par construction
             if(this.equipePion[$couleurs.indexOf(couleur)][i] !== this.pions[indexCasePlateau]){
                 let nbConnu = this.infoDeplacementPion[$couleurs.indexOf(couleur)].length;
-                if(this.infoDeplacementPion[$couleurs.indexOf(couleur)].include(i+1)){ //si on connais un pion qui se deplace de i+1
+                if(this.infoDeplacementPion[$couleurs.indexOf(couleur)].includes(i+1)){ //si on connais un pion qui se deplace de i+1
                     this.equipePion[$couleurs.indexOf(couleur)][i].probaDeplacement[i] = 0;
-                }else{
+                }
+                else{
                     this.equipePion[$couleurs.indexOf(couleur)][i].probaDeplacement[i] = 100/(3-this.infoDeplacementPion[$couleurs.indexOf(couleur)].length);
                 }
             }
         }
+        pion.probaDeplacement[deplacement-1] = 100;
     }
     /**
      * Met à jour le niveau de danger d'une case du plateau local du bot.
@@ -133,12 +153,18 @@ class PlateauBot {
     nivDangerMaj(indexCasePlateau){
         for(let i = 1; i <= 3; i++){
             //danger sur la case
-            this.nivDanger[indexCasePlateau] += this.pions[(indexCasePlateau-i).mod($taillePlateau)].probaDeplacement[i];
-            this.nivDanger[indexCasePlateau] += this.pions[(indexCasePlateau+i).mod($taillePlateau)].probaDeplacement[i];
-
+            if(this.pions[(indexCasePlateau - i).mod($taillePlateau)] !== $caseVide){
+                this.nivDanger[indexCasePlateau] += this.pions[(indexCasePlateau - i).mod($taillePlateau)].probaDeplacement[i];
+            }
+            if(this.pions[(indexCasePlateau + i).mod($taillePlateau)] !== $caseVide){
+                this.nivDanger[indexCasePlateau] += this.pions[(indexCasePlateau + i).mod($taillePlateau)].probaDeplacement[i];
+            }
             //danger d'un pion pour les pions du bot
-            if((this.pions[indexCasePlateau + i].color === this.colorBot) || (this.pions[indexCasePlateau - i].color === this.colorBot)){
-                this.pions[indexCasePlateau].nivDanger += this.pions[indexCasePlateau].probaDeplacement[i];
+            if(this.pions[indexCasePlateau] !== $caseVide){
+                if((this.pions[(indexCasePlateau + i).mod($taillePlateau)].couleur === this.colorBot) 
+                || (this.pions[(indexCasePlateau - i).mod($taillePlateau)].couleur === this.colorBot)){
+                    this.pions[indexCasePlateau].nivDanger += this.pions[indexCasePlateau].probaDeplacement[i];
+                }
             }
         }
     }
@@ -146,7 +172,7 @@ class PlateauBot {
      * Met à jour le niveau de danger sur toutes les cases du plateau local du bot.
      * Met à jour le niveau de danger des pion pour ceux du bot.
      */
-    nivDangerMaj(){
+    nivDangerMajAll(){
         for(let i = 0; i < $taillePlateau; i++){
             this.nivDangerMaj(i);
         }

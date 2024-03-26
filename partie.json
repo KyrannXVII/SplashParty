@@ -1,0 +1,122 @@
+{
+  "parties": [
+    {
+      "date": "2024-03-25T17:00:54.616Z",
+      "duree": 0,
+      "listeJoueurs": [
+        {
+          "pseudo": "cc1",
+          "couleur": "r",
+          "type": 3,
+          "ordre": "humain",
+          "aQuitte": "2024-03-25T17:00:54.616Z",
+          "aGagne": false
+        },
+        {
+          "pseudo": "cc2",
+          "couleur": "b",
+          "type": 0,
+          "ordre": "humain",
+          "aGagne": false
+        },
+        {
+          "pseudo": "BOT1",
+          "couleur": "m",
+          "type": 0,
+          "ordre": "BOT1",
+          "aGagne": false
+        },
+        {
+          "pseudo": "cc3",
+          "couleur": "v",
+          "type": 2,
+          "ordre": "humain",
+          "aGagne": false
+        }
+      ],
+      "listeCoups": [
+        {
+          "type": "deplacer",
+          "date": "2024-03-25T17:00:54.616Z",
+          "depart": 1,
+          "arrivee": 2,
+          "pion": {}
+        },
+        {
+          "type": "deplacer",
+          "date": "2024-03-25T17:00:54.616Z",
+          "depart": 2,
+          "arrivee": 3,
+          "pion": {}
+        },
+        {
+          "type": "deplacer",
+          "date": "2024-03-25T17:00:54.616Z",
+          "depart": 5,
+          "arrivee": 8,
+          "pion": {}
+        }
+      ],
+      "aQuitte": []
+    },
+    {
+      "date": "2024-03-25T17:18:50.405Z",
+      "duree": 1,
+      "listeJoueurs": [
+        {
+          "pseudo": "cc1",
+          "couleur": "r",
+          "type": 3,
+          "ordre": "humain",
+          "aQuitte": "2024-03-25T17:18:50.405Z",
+          "aGagne": false
+        },
+        {
+          "pseudo": "ccccccccccccccccccc2",
+          "couleur": "b",
+          "type": 0,
+          "ordre": "humain",
+          "aGagne": false
+        },
+        {
+          "pseudo": "BOT1",
+          "couleur": "m",
+          "type": 0,
+          "ordre": "BOT1",
+          "aGagne": false
+        },
+        {
+          "pseudo": "cc3",
+          "couleur": "v",
+          "type": 2,
+          "ordre": "humain",
+          "aGagne": false
+        }
+      ],
+      "listeCoups": [
+        {
+          "type": "deplacer",
+          "date": "2024-03-25T17:18:50.405Z",
+          "depart": 1,
+          "arrivee": 2,
+          "pion": {}
+        },
+        {
+          "type": "deplacer",
+          "date": "2024-03-25T17:18:50.405Z",
+          "depart": 2,
+          "arrivee": 3,
+          "pion": {}
+        },
+        {
+          "type": "deplacer",
+          "date": "2024-03-25T17:18:50.405Z",
+          "depart": 5,
+          "arrivee": 8,
+          "pion": {}
+        }
+      ],
+      "aQuitte": []
+    }
+  ]
+}

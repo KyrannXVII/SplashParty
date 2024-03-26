@@ -49,10 +49,9 @@ class Partie {
  * @returns La partie initialisée.
  */
 exports.initPartie= (x, listeJoueur) => {
+    try{
     let plateau = [];
     let nbJoueurs = x;
-    
-    
     let couleursRestantes = $couleurs.slice(0,nbJoueurs);
     // init des joueurs
     for(let i = 0; i<nbJoueurs; i++){
@@ -71,7 +70,6 @@ exports.initPartie= (x, listeJoueur) => {
         
         couleursRestantes.splice(couleurChoisie,1);
         //console.debug(couleursRestantes);
-
     }
 
     // init du tableau
@@ -100,6 +98,8 @@ exports.initPartie= (x, listeJoueur) => {
     console.log("nouvelle partie");
     console.log(partie);
     return partie;
+    }catch(error){
+        console.error(`Erreur lors de jeu_serveur initPartie ${error}`);}
 }
 
 
@@ -111,6 +111,7 @@ exports.initPartie= (x, listeJoueur) => {
  * @returns Un tableau de taille deux : [0] = deplacement du pion / [1] = position en avant / [2] = position en arriere, null si pas dispo car coup précédent.
  */
 exports.getDepPossible = (casePion,partie) =>{ 
+    try{
     const plateau = partie.plateau;
     //console.debug(plateau)
     if(casePion >=0 && casePion < $taillePlateau){ // si le case est bien entre 0 et 17
@@ -132,6 +133,8 @@ exports.getDepPossible = (casePion,partie) =>{
         console.error("Cette case n'existe pas")
         return 0;
     }    
+}catch(error){
+    console.error(`Erreur lors de jeu_serveur getDepPossible ${error}`);}
 }
 
 
@@ -142,6 +145,7 @@ exports.getDepPossible = (casePion,partie) =>{
  * @returns {boolean} True si la case d'arrivée est le coup précédent, False sinon.
  */
 const estCoupPrecedentInverse = (depart, arrivee,partie) => {
+    try{
     const coupPrecedent = partie.coupPrecedent;
     if(coupPrecedent === undefined) return false;
     if(depart==coupPrecedent[1] && arrivee==coupPrecedent[0]){
@@ -149,12 +153,17 @@ const estCoupPrecedentInverse = (depart, arrivee,partie) => {
         return true; }
     else 
         return false;
+    }catch(error){
+        console.error(`Erreur lors de jeu_serveur estCoupPrecedentInverse ${error}`);}
 }
 
 //un bot donne un pion et un sens il faut verifié qu'il puisse bien jouer cette combinaison
 const estCoupLegalBot =(depart,sens,partie)=>{
+    try{
     const caseArrivee = getCaseArrivee(depart, sens, partie.plateau);
     return !estCoupPrecedentInverse(depart,caseArrivee,partie); 
+}catch(error){
+    console.error(`Erreur lors de jeu_serveur estCoupLegalBot ${error}`);}
 }
 exports.estCoupLegalBot = estCoupLegalBot;
 
@@ -164,6 +173,7 @@ exports.estCoupLegalBot = estCoupLegalBot;
  * @param {boolean} sens Sens de déplacement (True: horaire | False: anti horaire) 
  */
 exports.deplacer = (caseDepart, sens, partie) => {
+    try{
     let message;
     let $plateau = partie.plateau
     console.log(`Case Depart : ${caseDepart}`);
@@ -198,6 +208,8 @@ exports.deplacer = (caseDepart, sens, partie) => {
     //    console.log(partie.aQuiLeTour)
     }
     return [false, message];
+}catch(error){
+    console.error(`Erreur lors de jeu_serveur deplacer ${error}`);}
 
 }
 
@@ -211,6 +223,7 @@ exports.deplacer = (caseDepart, sens, partie) => {
  * @returns {unsigned int} Case d'arrivée du pion sur la plateau.
  */
 const getCaseArrivee = (casePion, sens, $plateau) =>{
+    try{
     //console.log('getCaseArrivee' + ' ' +  casePion + " " + sens + " " + $plateau);
     //console.debug(`casePionA = ${casePion}`); 
     if(casePion >=0 && casePion < $taillePlateau){ // si le case est bien entre 0 et 19
@@ -239,6 +252,8 @@ const getCaseArrivee = (casePion, sens, $plateau) =>{
         console.error("Cette case n'existe pas");
         return 0;
     }
+}catch(error){
+    console.error(`Erreur lors de jeu_serveur getCaseArrivee ${error}`);}
 }
 exports.getCaseArrivee = getCaseArrivee;
 
@@ -252,11 +267,14 @@ function getJoueurAvecCouleur(couleur,partie){
     //console.debug("getJoueurAvecCouleur");
     //console.debug(couleur);
     //console.debug(partie);
+    try{
     for(let i=0; i<partie.listeJoueur.length; i++){
         //console.log(partie.listeJoueur[i])
         if(partie.listeJoueur[i].color == couleur) return partie.listeJoueur[i];
     }
     console.debug(`getJoueurAvecCouleur, joueur ${couleur} non trouvé`);
+}catch(error){
+    console.error(`Erreur lors de jeu_serveur getJoueurAvecCouleur ${error}`);}
 }
 
 
@@ -269,6 +287,7 @@ function getJoueurAvecCouleur(couleur,partie){
  * @todo Si la case est vide il se passe quoi ?????
  */
 function eliminerPion(casePion,partie){
+    try{
     if(casePion >=0 && casePion < $taillePlateau){ // si le case est bien entre 0 et 17
         if(casePion!=$caseVide){
             let couleur = partie.plateau[casePion].couleur;
@@ -282,6 +301,8 @@ function eliminerPion(casePion,partie){
             console.debug(`'eliminerPion' La case ${casePion} est vide`);
         }
     }
+}catch(error){
+    console.error(`Erreur lors de jeu_serveur eliminerPion ${error}`);}
     //afficher();
 }
 
@@ -289,7 +310,7 @@ const eliminerJoueur = (joueur, partie) => {
     //console.debug("eliminerJoueur");
     //console.debug(partie);
     //console.debug(joueur);
-
+    try{
     joueur.nbPions = 0;
 
     const tabPionsElimines = [];
@@ -308,6 +329,8 @@ const eliminerJoueur = (joueur, partie) => {
     //console.debug(partie);
     //console.debug(joueur);
     return tabPionsElimines
+}catch(error){
+    console.error(`Erreur lors de jeu_serveur eliminerJoueur ${error}`);}
 }
 exports.eliminerJoueur = eliminerJoueur;
 
@@ -315,7 +338,7 @@ exports.demasquerJoueur = (partie, nomJoueur, couleur)=>{
     //console.debug("demasquerJoueur");
     //console.debug(nomJoueur, couleur);
     //console.debug(partie);
-
+try{
     let message;
     let tabPionsElimines;
     
@@ -354,6 +377,8 @@ exports.demasquerJoueur = (partie, nomJoueur, couleur)=>{
     }
 
     return [false, message, tabPionsElimines];
+}catch(error){
+    console.error(`Erreur lors de jeu_serveur demasquerJoueur ${error}`);}
 };
 
 /**
@@ -362,6 +387,7 @@ exports.demasquerJoueur = (partie, nomJoueur, couleur)=>{
  * @returns {string} Le nom de la couleur en entier ("r" deviens "rouge").
  */
 function motEntierCouleurs(couleur){
+    try{
     switch(couleur){
         case "r" : return "rouge"; break;
         case "v" : return "vert"; break;
@@ -370,7 +396,8 @@ function motEntierCouleurs(couleur){
         case "c" : return "cyan"; break;
         case "j" : return "jaune"; break;
         default : console.debug(`motEntierCouleurs, ${couleur} pas une couleur`); break;
-    }
+    }}catch(error){
+        console.error(`Erreur lors de jeu_serveur motEntierCouleurs ${error}`);}
 }
 
 /**
@@ -378,9 +405,12 @@ function motEntierCouleurs(couleur){
  * @param {*} partie La partie en cours.
  */
 const joueurSuivant = (partie)=>{
+    try{
     partie.aQuiLeTour = (partie.aQuiLeTour+1).mod(partie.nbJoueur)
     if(partie.listeJoueur[partie.aQuiLeTour].nbPions == 0)
         joueurSuivant(partie);
+    }catch(error){
+        console.error(`Erreur lors de jeu_serveur joueurSuivant ${error}`);}
 }
 
 /**
@@ -390,12 +420,16 @@ const joueurSuivant = (partie)=>{
  * @returns {boolean} True si c'est au joueur sélectionné de jouer, False sinon.
  */
 exports.aSonTour = (joueurATester,partie) => {
+    try{
     //partie.listeJoueur.findIndex((joueur) => joueur.socketId ===joueurATester.socketId)
     console.log(`A Son tour : `)
     if(partieFinie(partie.listeJoueur) || partie.plusDeJoueurHumain) return (console.log(`A Son tour : fin de partie `),false);
     const indexJoueur = partie.listeJoueur.findIndex((joueur) => joueur.socketId ===joueurATester.socketId)
     console.log(`A Son tour :indexJoueur = ${indexJoueur} // qui le tour = ${partie.aQuiLeTour}`)    
     return indexJoueur === partie.aQuiLeTour
+    
+}catch(error){
+    console.error(`Erreur lors de jeu_serveur aSonTour ${error}`);}
 }
 
 /**
@@ -404,7 +438,9 @@ exports.aSonTour = (joueurATester,partie) => {
  * @returns {boolean} true si elle est finie, false sinon
  */
 function partieFinie(listeJoueur){
+    try{
     //console.debug("partie finie");
+    
     let nbJoueursEnJeu = 0;
     
     for(let i=0; i<listeJoueur.length; i++){
@@ -415,6 +451,8 @@ function partieFinie(listeJoueur){
     console.debug(`Dans partieFinie: nbJoueursEnJeu = ${nbJoueursEnJeu}`)
     console.debug(`Dans partieFinie: nbJoueursEnJeu <= 2 : ${nbJoueursEnJeu <= 2}`)
     return nbJoueursEnJeu <= 2;
+}catch(error){
+    console.error(`Erreur lors de jeu_serveur partieFinie ${error}`);}
 }
 
 /**
@@ -423,7 +461,10 @@ function partieFinie(listeJoueur){
  * @returns {Joueur} Le joueur gagnant OU FALSE si égalité
  */
 function calculerGagnant(partie){
+    try{
     let joueur1;
+    let message = "";
+    let gagnant;
     for(let i=0; i<partie.listeJoueur.length; i++){
         if(partie.listeJoueur[i].nbPions > 0){
             if(joueur1 == null){ // on garde de coté le joueur1 pour comparer plus tard2
@@ -433,17 +474,23 @@ function calculerGagnant(partie){
                 let joueur2 = partie.listeJoueur[i];
                 //console.log(`poins ${joueur1.couleur} : ${joueur1.nbPions}, pions ${joueur2.couleur} : ${joueur2.nbPions} `);
                 if(joueur1.nbPions < joueur2.nbPions){
-                    console.log(`Le joueur ${$couleurs[joueur2.color]} gagne en ayant le plus de pions restants`);
-                    return [joueur2,0]; // le joueur2 a gagné
+                    gagnant = joueur2;
+                    message = `${joueur2.username} gagne en ayant le plus de pions restants`;
+                    console.log(`${joueur2.username} gagne en ayant le plus de pions restants`);
+                    return [gagnant,0,message]; // le joueur2 a gagné
                 } 
                 else if(joueur1.nbPions > joueur2.nbPions){
-                    console.log(`Le joueur ${$couleurs[joueur1.color]} gagne en ayant le plus de pions restants`);
-                    return [joueur1,0]; // le joueur1 a gagné
+                    gagnant = joueur1;
+                    message = `${joueur1.username} gagne en ayant le plus de pions restants`;
+                    console.log(`${joueur1.username} gagne en ayant le plus de pions restants`);
+                    return [gagnant,0,message]; // le joueur1 a gagné
                 }
                 else{ // si le joueur1 a autant de pions que le joueur2, on regarde le plus proche du plongeoir
                     if(partie.plateau[0]!=$caseVide){ // si il y a un pion sur le plongeoir, il gagne
-                        console.log(`Le joueur ${partie.plateau[0].couleur} gagne en étant le plus proche du plongeoir`);
-                        return [getJoueurAvecCouleur($couleurs.indexOf(partie.plateau[0].couleur), partie),1];
+                        gagnant = getJoueurAvecCouleur($couleurs.indexOf(partie.plateau[0].couleur),partie);
+                        message = `${gagnant.username} gagne en étant le plus proche du plongeoir`;
+                        console.log(`${gagnant.username} gagne en étant le plus proche du plongeoir`);
+                        return [gagnant,1,message];
                     }
                     else{ // sinon on parcourt le plateau depuis le debut et la fin, le premier pion trouvé sera gagnant
                         let pion1; let pion2;
@@ -451,28 +498,42 @@ function calculerGagnant(partie){
                             pion1 = partie.plateau[y];
                             pion2 = partie.plateau[$taillePlateau-y]
                             if(pion1!=$caseVide && pion2==$caseVide){
-                                console.log(`Le joueur ${pion1.couleur} gagne en étant le plus proche du plongeoir`);
-                                return [getJoueurAvecCouleur($couleurs.indexOf(pion1.couleur), partie),1];
+                                gagnant = getJoueurAvecCouleur($couleurs.indexOf(pion1.couleur), partie);
+                                message = `${gagnant.username} gagne en étant le plus proche du plongeoir`;
+                                console.log(`${gagnant.username} gagne en étant le plus proche du plongeoir`);
+                                return [gagnant,1,message];
                             }
                             if(pion1==$caseVide && pion2!=$caseVide){
-                                console.log(`Le joueur ${pion2.couleur} gagne en étant le plus proche du plongeoir`);
-                                return [getJoueurAvecCouleur($couleurs.indexOf(pion2.couleur), partie),1];
+                                gagnant = getJoueurAvecCouleur($couleurs.indexOf(pion2.couleur), partie);
+                                message = `${gagnant.username} gagne en étant le plus proche du plongeoir`;
+                                console.log(`${gagnant.username} gagne en étant le plus proche du plongeoir`);
+                                return [gagnant,1,message];
                             }
                             if(pion1!=$caseVide && pion2!=$caseVide){ // si deux pions sont trouvés
                                 if(pion1.couleur == pion2.couleur){ // s'ils sont de la même couleur, celle ci est gagnante
-                                    console.log(`Le joueur ${pion1.couleur} gagne en étant le plus proche du plongeoir`);
-                                    return [getJoueurAvecCouleur($couleurs.indexOf(pion1.couleur), partie),1];
+                                    gagnant = getJoueurAvecCouleur($couleurs.indexOf(pion1.couleur), partie);
+                                    message = `Le joueur ${gagnant.username} gagne en étant le plus proche du plongeoir`;
+                                    console.log(`Le joueur ${gagnant.username} gagne en étant le plus proche du plongeoir`);
+                                    return [gagnant,1,message];
                                 }
                                 else{ // sinon on compare leurs deplacements
                                     if(pion1.deplacement > pion2.deplacement){
-                                        console.log(`Le joueur ${pion1.couleur} gagne en ayant le meilleur pion le plus proche du plongeoir`);
-                                        return [getJoueurAvecCouleur($couleurs.indexOf(pion1.couleur), partie),2];
+                                        gagnant = getJoueurAvecCouleur($couleurs.indexOf(pion1.couleur), partie);
+                                        message = `Le joueur ${gagnant.username} gagne en ayant le meilleur pion le plus proche du plongeoir`;
+                                        console.log(`Le joueur ${gagnant.username} gagne en ayant le meilleur pion le plus proche du plongeoir`);
+                                        return [gagnant,2,message];
                                     }
                                     else if(pion1.deplacement < pion2.deplacement){
-                                        console.log(`Le joueur ${pion2.couleur} gagne en ayant le meilleur pion le plus proche du plongeoir`);
-                                        return [getJoueurAvecCouleur($couleurs.indexOf(pion2.couleur), partie),2];
+                                        gagnant = getJoueurAvecCouleur($couleurs.indexOf(pion2.couleur), partie);
+                                        message = `Le joueur ${gagnant.username} gagne en ayant le meilleur pion le plus proche du plongeoir`;
+                                        console.log(`Le joueur ${gagnant.username} gagne en ayant le meilleur pion le plus proche du plongeoir`);
+                                        return [gagnant,2,message];
                                     }
-                                    else return [[getJoueurAvecCouleur($couleurs.indexOf(pion1.couleur), partie),getJoueurAvecCouleur($couleurs.indexOf(pion2.couleur), partie)],3]; // les deplacements sont les mêmes donc EGALITE
+                                    else{// les deplacements sont les mêmes donc EGALITE
+                                        
+                                        message = `Égalité entre ${joueur1.username} et ${joueur2.username} !`
+                                        return [[getJoueurAvecCouleur($couleurs.indexOf(pion1.couleur), partie),getJoueurAvecCouleur($couleurs.indexOf(pion2.couleur), partie)],3,message]; 
+                                    } 
                                 }
                             }
                         }
@@ -481,12 +542,16 @@ function calculerGagnant(partie){
             }
         }
     }
+}catch(error){
+    console.error(`Erreur lors de jeu_serveur calculerGagnant ${error}`);
+}
 }
 /*
 *   retourne les deux joueur pour egalité et sinon le pseudo du joueur
 *
 */
 function terminerPartie(partie){
+    try{
     // changer l'affichage de tout le monde
 
     let gagnant = calculerGagnant(partie);
@@ -495,6 +560,8 @@ function terminerPartie(partie){
     console.log(gagnant[0].username);
 
      return gagnant
+    }catch(error){
+        console.error(`Erreur lors de jeu_serveur terminerPartie ${error}`);}
 }
 
 

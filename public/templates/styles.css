@@ -168,7 +168,7 @@ header > img{
 
 #tab-plateau {
     
-    background-image: url(../data/piscine.png);
+    background-image: url(../data/piscine.jpg);
     background-size: cover;
     display: grid;
     
@@ -336,16 +336,22 @@ span#indicationCouleur:hover{
 .decor-ballon{
     max-height: 60px;
     max-width: 60px;
+    -webkit-filter: drop-shadow(5px 5px 5px #222);
+    filter: drop-shadow(6px 6px 6px #2222226e);
 }
 
 .decor-transat{
     height: 80px;
     width: 160px;
+    -webkit-filter: drop-shadow(5px 5px 5px #222);
+    filter: drop-shadow(6px 6px 6px #2222226e);
 }
 
 .decor-parasol{
     height: 180px;
     width: 180px;
+    -webkit-filter: drop-shadow(5px 5px 5px #222);
+    filter: drop-shadow(6px 6px 6px #2222226e);
 }
 
 .ecrans{

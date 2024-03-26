@@ -250,7 +250,7 @@ socket.on("Error",(message) =>{
 
 
 const relancerPartie = () => {
-
+    p.nbPions = 3;
     socket.emit("actualiseJoueur",p);
     afficherRoom();
 }
