@@ -222,6 +222,7 @@ console.debug(action);
     })
 
 socket.on("FinPartie",(resultat)=>{
+    console.debug(resultat);
     afficherFinPartie();
     const hUsername = document.querySelector("#username-gagnant");
 
@@ -250,7 +251,7 @@ socket.on("Error",(message) =>{
 
 
 const relancerPartie = () => {
-    p.nbPions = 3;
+    //p.nbPions = 3;
     socket.emit("actualiseJoueur",p);
     afficherRoom();
 }
@@ -286,13 +287,13 @@ bAjouterBot.addEventListener("click", ()=>{
     // listeners TODO pour ajouter les bots
     const bBotAleatoire = document.querySelector("#bBotAleatoire");
     bBotAleatoire.classList.remove("cacher");
-    bBotAleatoire.addEventListener("click", ()=>{(console.log("ajouter bot alétoire"),ajouterBot())});
+    bBotAleatoire.addEventListener("click", ()=>{(console.log("ajouter bot alétoire"),ajouterBot(1))});
     const bBotAlgo = document.querySelector("#bBotAlgo");
     bBotAlgo.classList.remove("cacher");
-    bBotAlgo.addEventListener("click", ()=>{console.log("ajouter bot algo")});
+    bBotAlgo.addEventListener("click", ()=>{(console.log("ajouter bot algo"),ajouterBot(2))});
     const bBotIA = document.querySelector("#bBotIA");
     bBotIA.classList.remove("cacher");
-    bBotIA.addEventListener("click", ()=>{console.log("ajouter bot IA")});
+    bBotIA.addEventListener("click", ()=>{(console.log("ajouter bot IA"),ajouterBot(3))});
 
     // X retire les boutons
     const bAnnulerAjouterBot = document.querySelector("#bAnnulerAjouterBot");
@@ -306,8 +307,8 @@ bAjouterBot.addEventListener("click", ()=>{
     });
 });
 
-const ajouterBot  = () =>{
-    socket.emit('AjouterBot',p.roomId);   
+const ajouterBot  = (niveauBot) =>{
+    socket.emit('AjouterBot',p.roomId,niveauBot);   
     console.debug("bot");
 }
 

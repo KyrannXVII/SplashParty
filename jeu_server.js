@@ -2,6 +2,7 @@ const $taillePlateau = 18;
 const $couleurs = ["r", "v", "b", "m", "c", "j"];
 const $caseVide = "O";
 exports.$caseVide = $caseVide;
+const logs = require("./logs.js");
 /**
  * @class
  * @classdesc Représentation d'un pion du jeu, possède une couleur et un déplacement.
@@ -97,6 +98,19 @@ exports.initPartie= (x, listeJoueur) => {
     let partie = new Partie(nbJoueurs, listeJoueur, plateau);
     console.log("nouvelle partie");
     console.log(partie);
+    //// logs /////
+    logs.resetLogs();
+    logs.setDateDebut();
+    partie.listeJoueur.forEach(j => {
+        let type
+        if(j.estUnBot){
+            console.debug(j);
+            if(typeof(j) == "BotAlea") type = "bot_aléatoire"
+            if(typeof(j) == "BotAlgo") type = "bot_algo"
+        }else type = "humain";
+        logs.ajouterJoueur(j.username, $couleurs[j.color], type, partie.listeJoueur.indexOf(j));
+    });
+    //// //// /////
     return partie;
     }catch(error){
         console.error(`Erreur lors de jeu_serveur initPartie ${error}`);}
@@ -175,6 +189,7 @@ exports.estCoupLegalBot = estCoupLegalBot;
 exports.deplacer = (caseDepart, sens, partie) => {
     try{
     let message;
+    let couleurPionElimine = undefined;
     let $plateau = partie.plateau
     console.log(`Case Depart : ${caseDepart}`);
     let caseArrivee = getCaseArrivee(caseDepart, sens, $plateau);
@@ -182,8 +197,9 @@ exports.deplacer = (caseDepart, sens, partie) => {
     //if (! estCoupPrecedentInverse(caseDepart,caseArrivee)){
     message = `${partie.listeJoueur[partie.aQuiLeTour].username} à déplacé un pion ${motEntierCouleurs(partie.plateau[caseDepart].couleur)}`;
     if ($plateau[caseArrivee] != $caseVide) {
-        console.debug(`Case Arrivee : `)
-        console.debug($plateau[caseArrivee])
+        console.debug(`Case Arrivee : `);
+        console.debug($plateau[caseArrivee]);
+        couleurPionElimine = $plateau[caseArrivee].couleur;
         message += ` en éliminant un pion ${motEntierCouleurs(partie.plateau[caseArrivee].couleur)}`
         eliminerPion(caseArrivee,partie); 
     }
@@ -194,6 +210,17 @@ exports.deplacer = (caseDepart, sens, partie) => {
     // sauvegarde le coup
     partie.coupPrecedent = [caseDepart, caseArrivee];
     //console.debug(coupPrecedent);
+
+    //// logs ////
+    logs.ajouterDep(caseDepart, 
+        caseArrivee, 
+        $plateau[caseArrivee].couleur, 
+        $plateau[caseArrivee].deplacement, 
+        sens,
+        $couleurs[partie.listeJoueur[partie.aQuiLeTour].color], 
+        couleurPionElimine);
+    //// //// ////
+
     // Verifie si la partie est finie
     if(partieFinie(partie.listeJoueur) || partie.plusDeJoueurHumain){
         console.log("Partie terminée");
@@ -296,6 +323,12 @@ function eliminerPion(casePion,partie){
             joueur.nbPions--;
             console.log(`Un pion ${motEntierCouleurs(couleur)} est tombé a l'eau`);
             partie.plateau[casePion] = $caseVide;
+            
+            // élimine le joueur même si inutile pour faire proprement et pour les logs
+            if(joueur.nbPions == 0){
+                eliminerJoueur(joueur, partie);
+            }
+            
         }
         else{
             console.debug(`'eliminerPion' La case ${casePion} est vide`);
@@ -326,6 +359,12 @@ const eliminerJoueur = (joueur, partie) => {
     }
     
     console.log(`${joueur.username} est éliminé`);
+
+    //// logs ////
+    logs.eliminerJoueur($couleurs[joueur.color], 
+        $couleurs[partie.listeJoueur[partie.aQuiLeTour].color]);
+    //// //// //// 
+
     //console.debug(partie);
     //console.debug(joueur);
     return tabPionsElimines
@@ -355,11 +394,23 @@ try{
         message = `${partie.listeJoueur[partie.aQuiLeTour].username} a voulu démasquer ${nomJoueur} comme étant ${motEntierCouleurs($couleurs[couleur])}, il avait raison !`;
         console.log(message);
         tabPionsElimines = eliminerJoueur(joueur, partie);
+        //// logs ////
+        logs.ajouterDem($couleurs[joueur.color], 
+            $couleurs[couleur], 
+            $couleurs[partie.listeJoueur[partie.aQuiLeTour].color], 
+            true)
+        //// //// ////
     }
     else{
         message = `${partie.listeJoueur[partie.aQuiLeTour].username} a voulu démasquer ${nomJoueur} comme étant ${motEntierCouleurs($couleurs[couleur])}, il avait tort !`;
         console.log(message);
         tabPionsElimines = eliminerJoueur(partie.listeJoueur[partie.aQuiLeTour], partie);
+        //// logs ////
+        logs.ajouterDem($couleurs[joueur.color], 
+            $couleurs[couleur], 
+            $couleurs[partie.listeJoueur[partie.aQuiLeTour].color], 
+            false)
+        //// //// ////
     }
     
     // Verifie si la partie est finie
@@ -458,7 +509,7 @@ function partieFinie(listeJoueur){
 /**
  * Calcule le joueur gagnant
  * @param {Partie} partie 
- * @returns {Joueur} Le joueur gagnant OU FALSE si égalité
+ * @returns {} [[gagnant], typeVictoire, message]
  */
 function calculerGagnant(partie){
     try{
@@ -475,14 +526,14 @@ function calculerGagnant(partie){
                 //console.log(`poins ${joueur1.couleur} : ${joueur1.nbPions}, pions ${joueur2.couleur} : ${joueur2.nbPions} `);
                 if(joueur1.nbPions < joueur2.nbPions){
                     gagnant = joueur2;
-                    message = `${joueur2.username} gagne en ayant le plus de pions restants`;
-                    console.log(`${joueur2.username} gagne en ayant le plus de pions restants`);
+                    message = `${gagnant.username} gagne en ayant le plus de pions restants`;
+                    console.log(`${gagnant.username} gagne en ayant le plus de pions restants`);
                     return [gagnant,0,message]; // le joueur2 a gagné
                 } 
                 else if(joueur1.nbPions > joueur2.nbPions){
                     gagnant = joueur1;
-                    message = `${joueur1.username} gagne en ayant le plus de pions restants`;
-                    console.log(`${joueur1.username} gagne en ayant le plus de pions restants`);
+                    message = `${gagnant.username} gagne en ayant le plus de pions restants`;
+                    console.log(`${gagnant.username} gagne en ayant le plus de pions restants`);
                     return [gagnant,0,message]; // le joueur1 a gagné
                 }
                 else{ // si le joueur1 a autant de pions que le joueur2, on regarde le plus proche du plongeoir
@@ -512,21 +563,21 @@ function calculerGagnant(partie){
                             if(pion1!=$caseVide && pion2!=$caseVide){ // si deux pions sont trouvés
                                 if(pion1.couleur == pion2.couleur){ // s'ils sont de la même couleur, celle ci est gagnante
                                     gagnant = getJoueurAvecCouleur($couleurs.indexOf(pion1.couleur), partie);
-                                    message = `Le joueur ${gagnant.username} gagne en étant le plus proche du plongeoir`;
-                                    console.log(`Le joueur ${gagnant.username} gagne en étant le plus proche du plongeoir`);
+                                    message = `${gagnant.username} gagne en étant le plus proche du plongeoir`;
+                                    console.log(`${gagnant.username} gagne en étant le plus proche du plongeoir`);
                                     return [gagnant,1,message];
                                 }
                                 else{ // sinon on compare leurs deplacements
                                     if(pion1.deplacement > pion2.deplacement){
                                         gagnant = getJoueurAvecCouleur($couleurs.indexOf(pion1.couleur), partie);
-                                        message = `Le joueur ${gagnant.username} gagne en ayant le meilleur pion le plus proche du plongeoir`;
-                                        console.log(`Le joueur ${gagnant.username} gagne en ayant le meilleur pion le plus proche du plongeoir`);
+                                        message = `${gagnant.username} gagne en ayant le meilleur pion le plus proche du plongeoir`;
+                                        console.log(`${gagnant.username} gagne en ayant le meilleur pion le plus proche du plongeoir`);
                                         return [gagnant,2,message];
                                     }
                                     else if(pion1.deplacement < pion2.deplacement){
                                         gagnant = getJoueurAvecCouleur($couleurs.indexOf(pion2.couleur), partie);
-                                        message = `Le joueur ${gagnant.username} gagne en ayant le meilleur pion le plus proche du plongeoir`;
-                                        console.log(`Le joueur ${gagnant.username} gagne en ayant le meilleur pion le plus proche du plongeoir`);
+                                        message = `${gagnant.username} gagne en ayant le meilleur pion le plus proche du plongeoir`;
+                                        console.log(`${gagnant.username} gagne en ayant le meilleur pion le plus proche du plongeoir`);
                                         return [gagnant,2,message];
                                     }
                                     else{// les deplacements sont les mêmes donc EGALITE
@@ -554,12 +605,43 @@ function terminerPartie(partie){
     try{
     // changer l'affichage de tout le monde
 
-    let gagnant = calculerGagnant(partie);
+    let resultats = calculerGagnant(partie);
    
     console.log("La partie est finie, le gagnant est :");
-    console.log(gagnant[0].username);
+    console.log(resultats[0].username);
 
-     return gagnant
+    //// logs ////
+    console.debug(resultats);
+    logs.calculerDuree();
+    partie.listeJoueur.forEach((j) => {
+        logs.setNbPion($couleurs[j.color], j.nbPions);
+    });
+    if(resultats[0] instanceof Array) {
+        logs.setGagnant($couleurs[resultats[0][0].color]);
+        logs.setGagnant($couleurs[resultats[0][1].color]);
+    }
+    else{
+        logs.setGagnant($couleurs[resultats[0].color]);
+    }
+    switch(resultats[1]){
+        case(0): 
+            logs.setTypeVictoire("nbPions");
+            break;
+        case(1): 
+            logs.setTypeVictoire("prochePlongeoir");
+            break;
+        case(2): 
+            logs.setTypeVictoire("meilleurPion");
+            break;
+        case(3): 
+            logs.setTypeVictoire("egalite");
+            break;
+    }
+    logs.enregistrerJSONecrase();
+    logs.enregistrerJSONincremente();
+    //// //// ////
+
+     return resultats
     }catch(error){
         console.error(`Erreur lors de jeu_serveur terminerPartie ${error}`);}
 }

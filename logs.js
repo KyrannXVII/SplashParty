@@ -1,4 +1,4 @@
-const partie = {
+let partie = {
     "date" : undefined,
     "duree" : undefined,
     "plateauDepart" : undefined,
@@ -9,17 +9,14 @@ const partie = {
     "listeCoups":[
 
     ],
-    "aQuitte": [
-
-    ],
     "gagnant": undefined,
-    "typeVictire": undefined
+    "typeVictoire": undefined
 }
 
 /**
  * efface toutes les données enregistrées au cours de la partie
  */
-function resetLog(){
+exports.resetLogs = () => {
     partie = {
         "date" : undefined,
         "duree" : undefined,
@@ -31,18 +28,15 @@ function resetLog(){
         "listeCoups":[
     
         ],
-        "aQuitte": [
-    
-        ],
         "gagnant": undefined,
-        "typeVictire": undefined
+        "typeVictoire": undefined
     }
 }
 
 /**
  * enregistre la date actuelle comme étant la date de début de la partie
  */
-function setDateDebut(){
+exports.setDateDebut = () => {
     const dateCourante = new Date();
     partie.date = dateCourante;
 }
@@ -50,8 +44,8 @@ function setDateDebut(){
 /**
  * enregistre la durée de la partie avec la date actuelle comme étant la fin de la partie
  */
-function calculerDuree(){
-    if(partie.date != undefined){
+exports.calculerDuree = () => {
+    if(partie.date != undefined) {
         const dateCourante = new Date();
         partie.duree = dateCourante - partie.date;
     }
@@ -64,7 +58,7 @@ function calculerDuree(){
  * @param {string} type humain, bot_alea, bot_inteligent etc
  * @param {int} ordre index de passage du joueur
  */
-function ajouterJoueur(pseudo, couleur, type, ordre){
+exports.ajouterJoueur = (pseudo, couleur, type, ordre) => {
     const joueur = {
         "pseudo" : pseudo,
         "couleur" : couleur,
@@ -85,7 +79,7 @@ function ajouterJoueur(pseudo, couleur, type, ordre){
  * @param {string} couleur sous forme "r", "v", "b" etc
  * @param {int} nbPion 
  */
-function setNbPion(couleur, nbPion){
+exports.setNbPion = (couleur, nbPion) => {
     partie.listeJoueurs.find((joueur)=>joueur.couleur === couleur).nbPion = nbPion;
 }
 
@@ -93,7 +87,7 @@ function setNbPion(couleur, nbPion){
  * enregistre la date a laquelle le joueur a quitté
  * @param {string} couleur sous forme "r", "v", "b" etc
  */
-function joueurQuitte(couleur){
+exports.joueurQuitte = (couleur) => {
     const dateCourante = new Date();
     partie.listeJoueurs.find((joueur)=>joueur.couleur === couleur).aQuitte = dateCourante;
 }
@@ -108,7 +102,7 @@ function joueurQuitte(couleur){
  * @param {string} jouePar sous forme "r", "v", "b" etc
  * @param {string} aElimine sous forme "r", "v", "b" etc
  */
-function ajouterDep(caseDepart, caseArrivee, couleurPion, depPion, direction, jouePar, aElimine=undefined){
+exports.ajouterDep = (caseDepart, caseArrivee, couleurPion, depPion, direction, jouePar, aElimine=undefined) => {
     const dateCourante = new Date();
     const coup = {
         "type": "deplacer",
@@ -118,10 +112,10 @@ function ajouterDep(caseDepart, caseArrivee, couleurPion, depPion, direction, jo
         "pion": {
             "couleur": couleurPion, 
             "deplacement": depPion,
-            "direction" : direction
+            "direction" : direction,
         },
         "joueur": jouePar,
-        "elimine": aElimine
+        "elimine": aElimine,
     }
     partie.listeCoups.push(coup);
 }
@@ -133,7 +127,7 @@ function ajouterDep(caseDepart, caseArrivee, couleurPion, depPion, direction, jo
  * @param {string} demasqueur  sous forme "r", "v", "b" etc
  * @param {boolean} juste 
  */
-function ajouterDem(joueurGuess, couleurGuess, demasqueur, juste){
+exports.ajouterDem = (joueurGuess, couleurGuess, demasqueur, juste) => {
     const dateCourante = new Date();
     const demasquage = {
         "type": "demasquer",
@@ -143,7 +137,7 @@ function ajouterDem(joueurGuess, couleurGuess, demasqueur, juste){
         "joueur" : demasqueur,
         "estJuste" : juste
     }
-
+    partie.listeCoups.push(demasquage);
 }
 
 /**
@@ -151,7 +145,7 @@ function ajouterDem(joueurGuess, couleurGuess, demasqueur, juste){
  * @param {string} couleur sous forme "r", "v", "b" etc
  * @param {string} par sous forme "r", "v", "b" etc
  */
-function eliminerJoueur(couleur, par){
+exports.eliminerJoueur = (couleur, par) => {
     const dateCourante = new Date();
     partie.listeJoueurs.find((joueur)=>joueur.couleur === couleur).elimineA = dateCourante;
     partie.listeJoueurs.find((joueur)=>joueur.couleur === couleur).eliminerPar = par;
@@ -161,60 +155,67 @@ function eliminerJoueur(couleur, par){
  * enregistre que le joueur de la couleur donnée a gagné
  * @param {string} couleur sous forme "r", "v", "b" etc
  */
-function setGagnant(couleur){
-    partie.listeJoueurs.find((joueur)=>joueur.couleur === couleur).a = true;
+exports.setGagnant = (couleur) => {
+    partie.listeJoueurs.find((joueur)=>joueur.couleur === couleur).aGagne = true;
 }
 
 /**
  * enregistre comment le gagnant a gagné
- * @param {string} type nBpions, prochePlongeoir, meilleurDep, egalite
+ * @param {string} type nbPions, prochePlongeoir, meilleurDep, egalite
  */
-function setTypeVictoire(type){
-    partie.typeVictire = type;
+exports.setTypeVictoire = (type) => {
+    partie.typeVictoire = type;
 }
 
 const fs = require('fs');
-function enregistrerJSONecrase(){
+const { initPartie } = require('./jeu_server');
+exports.enregistrerJSONecrase = () => {
     // Convertir l'objet en une chaîne JSON
     let jsonPartie = JSON.stringify(partie, null, 2); // Indentation de 2 espaces pour une meilleure lisibilité
 
     // Écrire la chaîne JSON dans un fichier
-    fs.writeFile('logs/logsEcrase.json', jsonPartie, (err) => {
+    fs.writeFile('logs/dernierePartie.json', jsonPartie, (err) => {
         if (err) {
             console.error('Erreur lors de l\'écriture du fichier :', err);
             return;
         }
-        console.log('Fichier "logsEcrase.json" enregistré avec succès !');
+        console.log('Fichier "dernierePartie.json" enregistré avec succès !');
     });
 }
-function enregistrerJSONincremente(){
+exports.enregistrerJSONincremente = () => {
+    const date = new Date();
+    const stringDate = `${date.getDate()}-${date.getMonth()+1}-${date.getFullYear()}`;
     // Lire le contenu du fichier JSON
-fs.readFile('logs/logsIncremente.json', 'utf8', (err, data) => {
+fs.readFile(`logs/logs-${stringDate}.json`, 'utf8', (err, data) => {
+    let jsonCourant;
     if (err) {
-        console.error('Erreur lors de la lecture du fichier :', err);
-        return;
+        if(err.code === 'ENOENT'){
+            jsonCourant = {
+                date: stringDate,
+                parties: []
+            };
+        }else{
+            console.error('Erreur lors de la lecture du fichier :', err);
+            return;
+        }
+    } else{
+        // Analyser le contenu JSON en tant qu'objet JavaScript
+        jsonCourant = JSON.parse(data);
     }
-
-
-    // Analyser le contenu JSON en tant qu'objet JavaScript
-    let jsonCourant = JSON.parse(data);
-    console.log(jsonCourant);
 
     // Modifier les données de la partie
     jsonCourant.parties.push(partie);
-    console.log(jsonCourant);
 
     // Convertir l'objet modifié en une chaîne JSON
     let jsonPartie = JSON.stringify(jsonCourant, null, 2);
-    console.log(jsonPartie);
 
     // Écrire la chaîne JSON dans le fichier
-    fs.writeFile('logs/logsIncremente.json', jsonPartie, (err) => {
+    fs.writeFile(`logs/logs-${stringDate}.json`, jsonPartie, (err) => {
         if (err) {
             console.error('Erreur lors de l\'écriture du fichier :', err);
             return;
         }
-        console.log('Fichier "partie.json" modifié avec succès !');
+        console.log(`Fichier "logs-${stringDate}.json" modifié avec succès !`);
     });
 });
 }
@@ -225,14 +226,14 @@ fs.readFile('logs/logsIncremente.json', 'utf8', (err, data) => {
 /**
  * affiche les données dans la console
  */
-function afficherConsole(){
+exports.afficherConsole = () => {
     console.log(partie);
 }
 
 /**
  * teste
  */
-function testValeurs(){
+exports.testValeurs = () => {
     setDateDebut();
     ajouterJoueur("cc1", "r", 3, "humain", 0);
     ajouterJoueur("ccccccccccccccccccc2", "b", 0, "humain", 1);
@@ -250,4 +251,5 @@ function testValeurs(){
     enregistrerJSONecrase();
     enregistrerJSONincremente();
 }
-testValeurs();
+//testValeurs();
+
