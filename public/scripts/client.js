@@ -79,8 +79,8 @@ socket.on("actuRoom",(room)=>{
     resetBomJoueursDansRoom();
 
     room.players.forEach(element => {
-        console.debug(element);
-        afficherNomJoueurDansRoom(element.username, element.ready);
+        //console.debug(element);
+        afficherNomJoueurDansRoom(element.username, element.ready, element.estUnBot);
     });
 
 });
@@ -336,3 +336,8 @@ const bAPropos = document.querySelector("#b-a-propos");
 bAPropos.addEventListener("click",() => {
     afficherAPropos();
 })
+
+const retirerBot = (idx) =>{
+    console.log(`Retirer le bot qui est a l'index ${idx}`)
+    socket.emit("RetirerBot",idx,p.roomId);
+}

@@ -115,6 +115,11 @@ header > img{
     /*font-family: 'MrsBeasleyRegular';*/
 }
 
+.bRetirerBot{
+    width: min-content !important;
+    height: min-content !important ;
+}
+
 
 /* PARTIE */
 
@@ -173,6 +178,7 @@ header > img{
     display: grid;
     
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  min-width: 500px;
   
     /*border: 1px solid black;*/
 }
@@ -190,7 +196,9 @@ header > img{
 
 div.case {
     /*border: 1px solid #000;*/
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     
 }
 

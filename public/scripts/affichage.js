@@ -217,14 +217,14 @@ function resetBomJoueursDansRoom() {
   }
 }
 
-function afficherNomJoueurDansRoom(pseudo, estPret) {
+function afficherNomJoueurDansRoom(pseudo, estPret, estUnBot) {
   const divImagesJoueurs = document.querySelector("#images-joueurs");
   const affichagesJoueurs = divImagesJoueurs.querySelectorAll(
     "div[class*=imageJoueur]",
   );
 
   let texte;
-  if (estPret) texte = `${pseudo} ✔️`;
+  if (estPret && estUnBot!=true) texte = `${pseudo} ✔️`;
   else texte = `${pseudo}`;
 
   for (let i = 0; i < 6; i++) {
@@ -234,6 +234,17 @@ function afficherNomJoueurDansRoom(pseudo, estPret) {
       affichagesJoueurs[i].classList.remove("transparent");
       const divPseudo = affichagesJoueurs[i].querySelector(".pseudoJoueur");
       divPseudo.textContent = texte;
+      if(estUnBot){
+        const bRetirerBot = document.createElement("button");
+        bRetirerBot.textContent = 'x';
+        bRetirerBot.classList.add("btn");
+        bRetirerBot.classList.add("btn-outline-danger");
+        bRetirerBot.classList.add("bRetirerBot");
+        bRetirerBot.addEventListener("click", () => {
+          retirerBot(i);
+        });
+        divPseudo.appendChild(bRetirerBot);
+      }
       return;
     }
   }
@@ -259,6 +270,8 @@ function toutCacher() {
   });
     const decor = document.querySelector("#decor");
     decor.classList.add("cacher");
+    decor.classList.remove("d-xl-block");
+    decor.classList.remove("d-none");
 
     const body = document.querySelector("body");
     body.classList.remove("fond-eau");
@@ -307,7 +320,9 @@ function afficherJeu() {
   ecran.classList.remove("cacher")
 
   const decor = document.querySelector("#decor");
-  decor.classList.remove("cacher");;
+  decor.classList.remove("cacher");
+  decor.classList.add("d-xl-block");
+  decor.classList.add("d-none");
 }
 
 function afficherFinPartie() {
@@ -328,7 +343,9 @@ function afficherFinPartie() {
   ecranjeu.classList.remove("cacher");
   
   const decor = document.querySelector("#decor");
-  decor.classList.remove("cacher");;
+  decor.classList.remove("cacher");
+  decor.classList.add("d-xl-block");
+  decor.classList.add("d-none");
 
   const interface = document.querySelector("#interface");
   interface.classList.add("cacher");
