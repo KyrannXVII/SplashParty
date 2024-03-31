@@ -43,7 +43,7 @@ io.on("connection", (socket) => {
         player.host = true;
         player.sonTour = true;
         console.log(
-          `${DateLog()} -> room crée : ${room.id}, host ${player.username}`
+          `${DateLog()} -> room crée : ${room.id}, host ${player.username}`,
         );
       } else {
         /* rejoindre une room */
@@ -79,28 +79,46 @@ io.on("connection", (socket) => {
       if (rooms.length > 0) {
         for (let room of rooms) {
           const idxPlayer = room.players.findIndex(
-            (player) => player.socketId === socket.id
+            (player) => player.socketId === socket.id,
           );
           if (idxPlayer >= 0) {
             //si le joueur est dans la room -> on a trouver la bonne room
             //console.log(room.id);
 
-          if (room.partie !== undefined) {
-           
-            const joueur = room.players[idxPlayer];
+            if (room.partie !== undefined) {
+              const joueur = room.players[idxPlayer];
+              const botRemplacant = new botsAlea.BotAlea(
+                joueur.username,
+                room.id,
+              );
+              const plateau_secu = room.partie.plateau.map(securisation_pion);
+              botRemplacant.init(plateau_secu);
+              botRemplacant.color = joueur.color;
+              botRemplacant.nbPions = joueur.nbPions;
+
+              console.debug(room.players[idxPlayer]);
+
+              room.players[idxPlayer] = botRemplacant;
+              console.debug("room.players");
+
+              console.debug(room.players);
+              //// logs ////
+              //TODO A corriger
+             // jeu.logs.joueurQuitte($couleurs[joueur.couleur]);
+              //// //// ////
+
+              faireJouerBot(room, false);
+              /* Jouueur eliminer lors de la deconnexion
             const tabPionsElimines =  jeu.eliminerJoueur(room.players[idxPlayer], room.partie);
            
-            //// logs ////
-            jeu.logs.joueurQuitte($couleurs[joueur.couleur]);
-            //// //// ////
-
+           
             // room.players[idxPlayer].connecte = false
             room.partie.nbJoueur--;
             if(room.partie.aQuiLeTour>idxPlayer) room.partie.aQuiLeTour--;
             
             //room.partie.listeJoueur.splice(idxPlayer,1);
             room.players.splice(idxPlayer, 1);
-            console.debug(room.partie.listeJoueur)
+            console.debug(room.partie.listeJoueur);
             console.log(room.partie.aQuiLeTour);
 
               console.debug(`Un joueur s'est deconnecté`);
@@ -129,6 +147,7 @@ io.on("connection", (socket) => {
               );
               broadCastBotActu(room, plateau_secu, [1, tabPionsElimines]); //agis comme un démasquage
               faireJouerBot(room, false);
+              */
             }
 
             //room.players.splice(idxPlayer, 1);
@@ -166,7 +185,7 @@ io.on("connection", (socket) => {
           room.partie = jeu.initPartie(room.players.length, room.players);
           const partie = room.partie;
           const liste_username = partie.listeJoueur.map(
-            (joueur) => joueur.username
+            (joueur) => joueur.username,
           );
           const plateau_secu = partie.plateau.map(securisation_pion);
           io.in(room.id).emit("messageChat", "== NOUVELLE PARTIE ==", true);
@@ -176,7 +195,7 @@ io.on("connection", (socket) => {
             partie.aQuiLeTour,
             liste_username,
             partie.nbJoueur,
-            room.id
+            room.id,
           );
           broadCastBotInit(room, plateau_secu);
         }
@@ -211,7 +230,7 @@ io.on("connection", (socket) => {
       socket.emit("retourDeplacementPossible", deplacementPossible, depPion);
     } catch {
       console.error(
-        `${DateLog()} -> Erreur lors de deplacementPossible ${error}`
+        `${DateLog()} -> Erreur lors de deplacementPossible ${error}`,
       );
     }
   });
@@ -222,13 +241,13 @@ io.on("connection", (socket) => {
       const retour = jeu.estCoupPrecedentInverse(
         posiPion,
         idxCase,
-        room.partie
+        room.partie,
       );
       //console.debug(retour);
       socket.emit("retourEstCoupPrecedentInverse", retour);
     } catch {
       console.error(
-        `${DateLog()} -> Erreur lors de estCoupPrecedentInverse ${error}`
+        `${DateLog()} -> Erreur lors de estCoupPrecedentInverse ${error}`,
       );
     }
   });
@@ -241,7 +260,7 @@ io.on("connection", (socket) => {
       const caseArrivee = jeu.getCaseArrivee(
         posiPion,
         direction,
-        room.partie.plateau
+        room.partie.plateau,
       );
       let res = jeu.deplacer(posiPion, direction, room.partie);
       finPartie = res[0] != false;
@@ -255,7 +274,7 @@ io.on("connection", (socket) => {
         plateau_secu,
         partie.aQuiLeTour,
         liste_username,
-        [0, posiPion, caseArrivee]
+        [0, posiPion, caseArrivee],
       );
       broadCastBotActu(room, plateau_secu, [0, posiPion, caseArrivee]); ////////////////////////////////////////////////// FALSE CAR ASKIP PAS ENCORE DE DENON FAUT S'EN OCCUPER TA MERE!
       io.in(room.id).emit("messageChat", message, true);
@@ -337,25 +356,25 @@ io.on("connection", (socket) => {
       //const demasquageVrai = jeu.demasquerJoueur(room.partie, nomJoueur, couleur);
 
       const res = jeu.demasquerJoueur(room.partie, nomJoueur, couleur);
-      
-      finPartie = res[0] != false;
-      console.log(`res= ${res[0]}`)
 
-      console.log(`FIN DE PARTIE ? Valeur de finPartie = ${finPartie}`)
+      finPartie = res[0] != false;
+      console.log(`res= ${res[0]}`);
+
+      console.log(`FIN DE PARTIE ? Valeur de finPartie = ${finPartie}`);
       const message = res[1];
       const tabPionsElimines = res[2];
       io.in(room.id).emit("messageChat", message, true);
 
       if (finPartie) {
         const liste_username = room.partie.listeJoueur.map(
-          (joueur) => joueur.username
+          (joueur) => joueur.username,
         );
         io.in(room.id).emit(
           "actualisePartie",
           room.partie.plateau,
           room.partie.aQuiLeTour,
           liste_username,
-          [1, tabPionsElimines]
+          [1, tabPionsElimines],
         );
         const gagnant = res[0][0];
         const estEgalite = res[0][1];
@@ -365,7 +384,7 @@ io.on("connection", (socket) => {
         //broadCastBotFinPartie(room);
       } else {
         const liste_username = room.partie.listeJoueur.map(
-          (joueur) => joueur.username
+          (joueur) => joueur.username,
         );
         let plateau_secu = room.partie.plateau.map(securisation_pion);
         io.in(room.id).emit(
@@ -373,7 +392,7 @@ io.on("connection", (socket) => {
           room.partie.plateau,
           room.partie.aQuiLeTour,
           liste_username,
-          [1, tabPionsElimines]
+          [1, tabPionsElimines],
         );
         broadCastBotActu(room, plateau_secu, [1, tabPionsElimines]); //true car demasquage
         faireJouerBot(room, finPartie);
@@ -407,13 +426,13 @@ io.on("connection", (socket) => {
       let bot;
       switch (niveauBot) {
         case 1:
-          bot = new botsAlea.BotAlea(`BOT${room.nbBot}_(Aléa)`, roomId);
+          bot = new botsAlea.BotAlea(`BOT${room.nbBot}${Math.floor(Math.random() * 100)}_(Aléa)`, roomId);
           break;
         case 2:
-          bot = new botsAlgo.BotAlgo(`BOT${room.nbBot}_(Algo1)`, roomId);
+          bot = new botsAlgo.BotAlgo(`BOT${room.nbBot}${Math.floor(Math.random() * 100)}_(Algo1)`, roomId);
           break;
         case 3:
-          bot = new botsAlea.BotAlea(`BOT${room.nbBot}_(Algo2)`, roomId);
+          bot = new botsAlea.BotAlea(`BOT${room.nbBot}${Math.floor(Math.random() * 100)}_(Algo2)`, roomId);
           break;
       }
 
@@ -424,6 +443,16 @@ io.on("connection", (socket) => {
       console.error('Trace de la pile:', error.stack);;
     }
   });
+  
+  socket.on("RetirerBot",(index,roomid) =>{
+  
+    const room = rooms.find((room) => room.id === roomid);  
+    room.players.splice(index, 1);
+    room.nbBot--;
+    io.in(room.id).emit("actuRoom", room);
+
+
+  })
   /*
             SUITE SOCKET ON ET EMIT
     
@@ -451,7 +480,7 @@ const actualiserJoueur = (p) => {
   const room = rooms.find((room) => room.id === p.roomId);
   //console.debug(room);
   let idxJoueur = room.players.findIndex(
-    (player) => player.socketId === p.socketId
+    (player) => player.socketId === p.socketId,
   );
   //console.debug(idxJoueur);
   room.players[idxJoueur] = p;
@@ -537,7 +566,7 @@ const faireJouerBot = async (room, finPartie_) => {
         const caseArrivee = jeu.getCaseArrivee(
           action[1],
           action[2],
-          room.partie.plateau
+          room.partie.plateau,
         );
         res = jeu.deplacer(action[1], action[2], room.partie); // pion et sens
         finPartie = res[0] != false;
@@ -558,7 +587,7 @@ const faireJouerBot = async (room, finPartie_) => {
         plateau_secu,
         partie.aQuiLeTour,
         liste_username,
-        tabPourAnimation
+        tabPourAnimation,
       );
       broadCastBotActu(room, plateau_secu, tabPourAnimation); ////////////////////////////////////////////////// FALSE CAR ASKIP PAS ENCORE DE DENON FAUT S'EN OCCUPER TA MERE!
       ////////////////////////////////////////////////// CORDIALEMENT.
@@ -582,6 +611,9 @@ const faireJouerBot = async (room, finPartie_) => {
 const joueurNonBot = (listeJoueur) => {
   return listeJoueur.every((j) => j.estUnBot);
 };
+
+
+
 
 // TEST SERVEUR LOG
 function createFileWithHelloWorld() {

@@ -46,14 +46,16 @@ class BotAlgo {
     let pionLePlusDangereux = this.plateauLocal.pions[0];
     //trouver le pion le plus dangereux
     for (let i = 1; i < $taillePlateau; i++) {
-      if (
-        this.plateauLocal.pions[i].nivDanger >
-        this.plateauLocal.pions[pionLePlusDangereux].nivDanger
-      ) {
-        pionLePlusDangereux = i;
-      }
+      if(this.plateauLocal.pions[i] != $caseVide){
+        if (
+          this.plateauLocal.pions[i].nivDanger >
+          pionLePlusDangereux.nivDanger
+        ) {
+          pionLePlusDangereux = i;
+        } 
     }
-    let indexPionLePlusDangereux;
+    }
+    let indexPionLePlusDangereux = 0;
     for (let i = 1; i < $taillePlateau; i++) {
       if (this.plateauLocal.idPions[i] === pionLePlusDangereux.id) {
         indexPionLePlusDangereux = i;
@@ -62,6 +64,10 @@ class BotAlgo {
     let mouvementPossible = [];
     //parcous à +-3 du pion
     let probaMax = 0;
+    console.log("indexPionLePlusDangereux");
+    console.log(indexPionLePlusDangereux);
+    console.log("pionLePlusDangereux");
+    console.log(pionLePlusDangereux);
     for (let i = 1; i < 3; i++) {
       let probaPionPlus = 0;
       if (
@@ -94,7 +100,7 @@ class BotAlgo {
         mouvementPossible.push({ proba: probaPionPlus, coup: [0, i, false] });
       }
       if (probaPionMoins != 0) {
-        mouvementPossible.push({ proba: probaPionPlus, coup: [0, i, true] });
+        mouvementPossible.push({ proba: probaPionMoins, coup: [0, i, true] });
       }
     }
     //TODO test coup precedant
@@ -137,6 +143,10 @@ class PlateauBot {
     }
 
     this.pions = new Array($taillePlateau);
+    //init sinon problèmes.
+    for (let i = 0; i < $taillePlateau; i++) {
+      this.pions[i] = $caseVide;
+    }
     for (let i = 0; i < $taillePlateau; i++) {
         this.nivDanger[i] = 0;
         if(plateau[i] !== $caseVide){
@@ -212,7 +222,7 @@ class PlateauBot {
         this.nivDanger[indexCasePlateau] +=
           this.pions[
             this.idPions[(indexCasePlateau - i).mod($taillePlateau)]
-          ].probaDeplacement[i];
+          ].probaDeplacement[i-1];
       }
       if (
         this.idPions[(indexCasePlateau + i).mod($taillePlateau)] !== $caseVide
@@ -220,7 +230,7 @@ class PlateauBot {
         this.nivDanger[indexCasePlateau] +=
           this.pions[
             this.idPions[(indexCasePlateau + i).mod($taillePlateau)]
-          ].probaDeplacement[i];
+          ].probaDeplacement[i-1];
       }
       //danger d'un pion pour les pions du bot
       if (this.idPions[indexCasePlateau] !== $caseVide) {
@@ -228,7 +238,7 @@ class PlateauBot {
             && this.pions[this.idPions[(indexCasePlateau + i).mod($taillePlateau)]].couleur === this.colorBot) 
          || (this.idPions[(indexCasePlateau - i).mod($taillePlateau)] !== $caseVide 
             && this.pions[this.idPions[(indexCasePlateau - i).mod($taillePlateau)]].couleur === this.colorBot)) {
-            this.pions[this.idPions[indexCasePlateau]].nivDanger += this.pions[this.idPions[indexCasePlateau]].probaDeplacement[i];
+            this.pions[this.idPions[indexCasePlateau]].nivDanger += this.pions[this.idPions[indexCasePlateau]].probaDeplacement[i-1];
         }
       }
     }
