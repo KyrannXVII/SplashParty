@@ -396,13 +396,13 @@ io.on("connection", (socket) => {
       let bot;
       switch (niveauBot) {
         case 1:
-          bot = new botsAlea.BotAlea(`BOT${room.nbBot}${Math.floor(Math.random() * 100)}_(Aléa)`, roomId);
+          bot = new botsAlea.BotAlea(`${usernameBot()}_(Aléa)`, roomId);
           break;
         case 2:
-          bot = new botsAlgo.BotAlgo(`BOT${room.nbBot}${Math.floor(Math.random() * 100)}_(Algo1)`, roomId);
+          bot = new botsAlgo.BotAlgo(`${usernameBot()}_(Algo1)`, roomId);
           break;
         case 3:
-          bot = new botsAlea.BotAlea(`BOT${room.nbBot}${Math.floor(Math.random() * 100)}_(Algo2)`, roomId);
+          bot = new botsAlea.BotAlea(`${usernameBot()}_(Algo2)`, roomId);
           break;
       }
       room.players.push(bot);
@@ -543,6 +543,38 @@ const broadCastBotFinPartie = (room) => {
     }
   });
 };
+
+const usernameBot = () =>{
+  const noms = [
+    "Bidule", "Choupinou", "Loulou", "Pamplemousse", "Cacahuète",
+    "Bibi", "Frimousse", "Titi", "Minou", "Zazou",
+    "Papillon", "Poussin", "Croquignol", "Tic-tac", "Paillette",
+    "Bambou", "Coquillette", "Zozo", "Frimousse", "Sardine",
+    "Zébulon", "Chipie", "Bouton d'or", "Biscuit", "Poupoune",
+    "Zinzin", "Miette", "Pirouette", "Fanfan", "Tagada",
+    "Tchou-tchou", "Boubou", "Zigzag", "Lutin", "Pingouin",
+    "Chouquette", "Nin-Nin", "Tournesol", "Pistache", "Galipette",
+    "Zoubida", "Choupette", "Bidibidi", "Roudoudou", "Pinpin",
+    "Choupichou", "Papaye", "Pop-corn", "Pimousse", "Kiki"
+  ];
+
+  const adjectifs = [
+    "Étourdi", "Facétieux", "Givré", "Farfelu", "Pétillant",
+    "Frétillant", "Zinzin", "Froufroutant", "Ravigotant", "Sautillant",
+    "Foufou", "Ébouriffant", "Chamboulant", "Zigzaguant", "Éclatant",
+    "Tournicotant", "Rigolard", "Loufoque", "Truculent", "Pittoresque",
+    "Espiègle", "Exubérant", "Bouillonnant", "Cocasse", "Fougueux",
+    "Tourbillonnant", "Singulier", "Épatant", "Éclaboussant", "Éblouissant",
+    "Farceur", "Badin", "Coquin", "Fougueux", "Fringant",
+    "Éblouissant", "Amusant", "Éclatant", "Excentrique", "Fantaisiste",
+    "Fringant", "Jubilatoire", "Loufoque", "Marrant", "Original",
+    "Rigolo", "Surprenant", "Volubile", "Zazou", "Zinzolin"
+  ];
+
+  let username =  noms[Math.floor(Math.random() * noms.length)] + adjectifs[Math.floor(Math.random() * adjectifs.length)];
+  return username
+
+}
 
 const faireJouerBot = async (room, finPartie_) => {
   try {
