@@ -86,6 +86,7 @@ socket.on("actuRoom", (room) => {
 const pretB = document.querySelector("#b-pret-roomjeu");
 pretB.addEventListener("click", () => {
   p.ready = !p.ready;
+  p.nbPions = 3;
   pretB.classList.toggle("pretT");
   //console.debug(p.roomId);
   socket.emit("joueurPret", p);

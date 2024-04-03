@@ -406,6 +406,9 @@ io.on("connection", (socket) => {
           break;
       }
       room.players.push(bot);
+      console.debug("room.players :");
+
+      console.debug(room.players);
       io.in(room.id).emit("actuRoom", room);
       verificationPret(room); 
     } catch (error) {

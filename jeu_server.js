@@ -55,6 +55,9 @@ exports.initPartie= (x, listeJoueur) => {
     let nbJoueurs = x;
     let couleursRestantes = $couleurs.slice(0,nbJoueurs);
     // init des joueurs
+    console.debug("x")
+
+    console.debug(x)
     for(let i = 0; i<nbJoueurs; i++){
         let couleurChoisie = Math.floor(Math.random()*couleursRestantes.length);
         //console.debug("couleurChoisie");
@@ -495,6 +498,9 @@ function partieFinie(listeJoueur){
     let nbJoueursEnJeu = 0;
     
     for(let i=0; i<listeJoueur.length; i++){
+        console.debug(`listeJoueur[i].nbPions pour i =${i}`)
+
+        console.debug(listeJoueur[i].nbPions)
         if(listeJoueur[i].nbPions > 0) nbJoueursEnJeu++;
     }
 
