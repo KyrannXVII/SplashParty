@@ -173,37 +173,7 @@ io.on("connection", (socket) => {
       console.debug("PRET!!");
       actualiserJoueur(player);
       let room = rooms.find((room) => room.id === player.roomId);
-
-      if (room.players.every((joueur) => joueur.ready)) {
-        // si tous les joueurs sont prets
-        if (room.players.length < 3) {
-          console.log("Il faut au moins 3 joueurs pour commencer une partie");
-          io.in(room.id).emit("actuRoom", room);
-        } else {
-          //console.log('room.player');
-          //console.log(room.players);
-          room.partie = jeu.initPartie(room.players.length, room.players);
-          const partie = room.partie;
-          const liste_username = partie.listeJoueur.map(
-            (joueur) => joueur.username,
-          );
-          const plateau_secu = partie.plateau.map(securisation_pion);
-          io.in(room.id).emit("messageChat", "== NOUVELLE PARTIE ==", true);
-          io.in(room.id).emit(
-            "lancerPartie",
-            plateau_secu,
-            partie.aQuiLeTour,
-            liste_username,
-            partie.nbJoueur,
-            room.id,
-          );
-          broadCastBotInit(room, plateau_secu);
-        }
-      } else {
-        // si tous les joueurs ne sont pas prets
-        console.log("Tous les joueurs ne sont pas pret");
-        io.in(room.id).emit("actuRoom", room);
-      }
+      verificationPret(room);      
     } catch (error) {
       console.error(`${DateLog()} -> Erreur lors de joueurPret `)
       console.error('Trace de la pile:', error.stack);
@@ -435,9 +405,9 @@ io.on("connection", (socket) => {
           bot = new botsAlea.BotAlea(`BOT${room.nbBot}${Math.floor(Math.random() * 100)}_(Algo2)`, roomId);
           break;
       }
-
       room.players.push(bot);
       io.in(room.id).emit("actuRoom", room);
+      verificationPret(room); 
     } catch (error) {
       console.error(`${DateLog()} -> Erreur lors de AjouterBot`);
       console.error('Trace de la pile:', error.stack);;
@@ -504,6 +474,39 @@ const securisation_pion = (pion) => {
   newPion.deplacement = 0;
   return newPion;
 };
+
+const verificationPret = (room) => {
+if (room.players.every((joueur) => joueur.ready)) {
+  // si tous les joueurs sont prets
+  if (room.players.length < 3) {
+    console.log("Il faut au moins 3 joueurs pour commencer une partie");
+    io.in(room.id).emit("actuRoom", room);
+  } else {
+    //console.log('room.player');
+    //console.log(room.players);
+    room.partie = jeu.initPartie(room.players.length, room.players);
+    const partie = room.partie;
+    const liste_username = partie.listeJoueur.map(
+      (joueur) => joueur.username,
+    );
+    const plateau_secu = partie.plateau.map(securisation_pion);
+    io.in(room.id).emit("messageChat", "== NOUVELLE PARTIE ==", true);
+    io.in(room.id).emit(
+      "lancerPartie",
+      plateau_secu,
+      partie.aQuiLeTour,
+      liste_username,
+      partie.nbJoueur,
+      room.id,
+    );
+    broadCastBotInit(room, plateau_secu);
+  }
+} else {
+  // si tous les joueurs ne sont pas prets
+  console.log("Tous les joueurs ne sont pas pret");
+  io.in(room.id).emit("actuRoom", room);
+}}
+
 
 // ****************************** GESTION BOT
 const broadCastBotInit = (room, plateau) => {

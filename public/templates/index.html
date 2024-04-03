@@ -25,9 +25,13 @@
         <!--<img src="../data/titre.png" alt="Splash Party" id="titre">-->
         <img src="../data/gouttes.png" class="img-header inverse">
         
-        <button id="btn-header" class="btn btn-xs btn-warning" data-bs-toggle="offcanvas" href="#offcanvasRegles" role="button" aria-controls="offcanvasRegles" >
+        <button id="bRegles" class="btn btn-xs btn-warning btn-header" data-bs-toggle="offcanvas" href="#offcanvasRegles" role="button" aria-controls="offcanvasRegles" >
             règles
         </button>
+        <button class="btn btn-xs btn-warning btn-header" onclick="window.open('lien vers questionnaire', '_blank')">
+            report Bug
+        </button>
+        
     </header>
 
     <dialog class="ta-classe">
@@ -40,7 +44,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
-            <p>Chaque joueur possède une couleur unique qu'il doit garder secrète, ainsi que 3 pions de cette couleur avec les numéros 1, 2 et 3 indiqué dessous.
+            <p>Chaque joueur possède une couleur unique qu'il doit garder secrète, ainsi que 3 pions de cette couleur avec les numéros 1, 2 et 3 indiqués dessous.
             Les numéros sous les pions ne sont, au début de la partie, connus par personne.
             Le but du jeu est de conserver des pions de sa couleur sur le terrain jusqu'en fin de partie.
             </p>
@@ -70,11 +74,11 @@
 
             <h1>Comment jouer?</h1>
             <ul>
-                <li>Voir sa couleur: Une fois en jeu survoler le cercle à droite de votre pseudo.</li>
+                <li>Voir sa couleur: Une fois en jeu, survolez le cercle à droite de votre pseudo.</li>
                 <li>Déplacer un pion: Lorsque c'est à votre tour, cliquez sur le pion que vous voulez déplacer puis cliquez sur l'une des cases ayant changé de couleur
-                    pour le déplacer sur cette celle ci.
+                    pour le déplacer sur celle ci.
                 </li>
-                <li>Démasquer un joueur: Lorsque c'est à votre tour, choisissez le pseudo du joueur à démasquer et sa couleur puis cliquez sur le bouton démasquer.</li>
+                <li>Démasquer un joueur: Lorsque c'est à votre tour, choisissez le pseudo du joueur à démasquer et sa couleur, puis cliquez sur le bouton démasquer.</li>
 
             </ul>
             <h2></h2>
@@ -168,8 +172,8 @@
             
                     </div>
                     <div class="row justify-content-center">
-                        <div class="col-2 ">
-                            <button class="btn" id="b-a-propos">à propos</button>
+                        <div class="col-3 ">
+                            <button class="btn btn-info btn-sm" id="b-a-propos">à propos de Splash Piscine</button>
                         </div>
                     </div>
                 </div>
@@ -277,7 +281,7 @@
                                     <div id="tab-plateau">
                                         <!-- Lignes -->
                                         <div id="ligne1">
-                                             <!-- Colonnes -->
+                                            <!-- Colonnes -->
                                             <div class="case"></div>
                                             <div id="case2" class="case">2</div>
                                             <div id="case3" class="case">3</div>

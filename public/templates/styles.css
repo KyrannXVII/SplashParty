@@ -38,6 +38,7 @@ body, html {
 
 header{
     height: auto;
+    padding-left: 21%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -75,8 +76,13 @@ header > img{
     height:auto;
 }
 
-#btn-header{
-    width: 6%;
+.btn-header{
+    border: solid 3px #463f07 !important;
+}
+
+#bRegles{
+    margin-left: 10%;
+    margin-right: 2px;
 }
 
 /* MENU */
@@ -87,6 +93,7 @@ header > img{
 #creer-rejoindre-partie > div{
     background-color: rgba(171, 228, 255, 0.5);
     border-radius: 10px; 
+    margin-bottom: 10px;
     
 }
 

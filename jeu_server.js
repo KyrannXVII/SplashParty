@@ -104,9 +104,9 @@ exports.initPartie= (x, listeJoueur) => {
     partie.listeJoueur.forEach(j => {
         let type
         if(j.estUnBot){
-            console.debug(j);
-            if(typeof(j) == "BotAlea") type = "bot_aléatoire"
-            if(typeof(j) == "BotAlgo") type = "bot_algo"
+            console.debug("j.constructor.name");
+            console.debug(j.constructor.name);
+            type = j.constructor.name;
         }else type = "humain";
         logs.ajouterJoueur(j.username, $couleurs[j.color], type, partie.listeJoueur.indexOf(j));
     });
