@@ -495,6 +495,15 @@ if (room.players.every((joueur) => joueur.ready)) {
       (joueur) => joueur.username,
     );
     const plateau_secu = partie.plateau.map(securisation_pion);
+    room.players.map((j)=>{
+      if(!j.estUnBot){
+        console.debug("ICI PAS UN BOT!");
+        j.ready = false;
+      }
+    })
+    console.debug("room.players");
+
+    console.debug(room.players);
     io.in(room.id).emit("messageChat", "== NOUVELLE PARTIE ==", true);
     io.in(room.id).emit(
       "lancerPartie",
