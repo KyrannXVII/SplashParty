@@ -249,6 +249,8 @@ io.on("connection", (socket) => {
       broadCastBotActu(room, plateau_secu, [0, posiPion, caseArrivee]); ////////////////////////////////////////////////// FALSE CAR ASKIP PAS ENCORE DE DENON FAUT S'EN OCCUPER TA MERE!
       io.in(room.id).emit("messageChat", message, true);
 
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       if (finPartie) {
         const gagnant = res[0][0];
         const estEgalite = res[0][1];
@@ -396,13 +398,13 @@ io.on("connection", (socket) => {
       let bot;
       switch (niveauBot) {
         case 1:
-          bot = new botsAlea.BotAlea(`${usernameBot()}_(Aléa)`, roomId);
+          bot = new botsAlea.BotAlea(`🤖 ${usernameBot()} (Aléa)`, roomId);
           break;
         case 2:
-          bot = new botsAlgo.BotAlgo(`${usernameBot()}_(Algo1)`, roomId);
+          bot = new botsAlgo.BotAlgo(`🤖 ${usernameBot()} (Algo1)`, roomId);
           break;
         case 3:
-          bot = new botsAlea.BotAlea(`${usernameBot()}_(Algo2)`, roomId);
+          bot = new botsAlea.BotAlea(`🤖 ${usernameBot()} (Algo2)`, roomId);
           break;
       }
       room.players.push(bot);
@@ -545,7 +547,7 @@ const broadCastBotFinPartie = (room) => {
 };
 
 const usernameBot = () =>{
-  const noms = [
+ /* const noms = [
     "Bidule", "Choupinou", "Loulou", "Pamplemousse", "Cacahuète",
     "Bibi", "Frimousse", "Titi", "Minou", "Zazou",
     "Papillon", "Poussin", "Croquignol", "Tic-tac", "Paillette",
@@ -557,7 +559,6 @@ const usernameBot = () =>{
     "Zoubida", "Choupette", "Bidibidi", "Roudoudou", "Pinpin",
     "Choupichou", "Papaye", "Pop-corn", "Pimousse", "Kiki"
   ];
-
   const adjectifs = [
     "Étourdi", "Facétieux", "Givré", "Farfelu", "Pétillant",
     "Frétillant", "Zinzin", "Froufroutant", "Ravigotant", "Sautillant",
@@ -569,9 +570,33 @@ const usernameBot = () =>{
     "Éblouissant", "Amusant", "Éclatant", "Excentrique", "Fantaisiste",
     "Fringant", "Jubilatoire", "Loufoque", "Marrant", "Original",
     "Rigolo", "Surprenant", "Volubile", "Zazou", "Zinzolin"
+  ];*/ 
+  const noms = [
+    "Bidule", "Loulou", "Bibi", "Minou", "Zazou",
+    "Tic-tac", "Poule", "Bambou", "Zozo", "Sardou",
+    "Chipie", "Gaston", "Pistou", "Zigzag", "Ginette",
+    "Louise", "Zébu", "Boubou", "Nin-Nin", "Pirate",
+    "Titi", "Minet", "Papaye", "Pop-corn", "Pimousse",
+    "Kiki", "Ricrac", "Minnie", "Tourni", "Câlin",
+    "Poupi", "Mickey", "Tartif", "Tonton", "Papou",
+    "Pépère", "Cocoon", "Gigi", "Trotro", "Vénus",
+    "Cassis", "Médor", "Boubou", "Bidibi", "Pupuce",
+    "Zazie", "Moumou", "Babou", "Bibine", "Zazou"
+  ]
+  const adjectifs = [
+    "Drôle", "Givré", "Foufou", "Farfel", "Fiesta",
+    "Pétant", "Tordu", "Zinzin", "Coquin", "Zinzin",
+    "Rigolo", "Frivole", "Dingue", "Fougue", "Dinghy",
+    "Badin", "Bavard", "Zinzin", "Givré", "Fiesta",
+    "Zazou", "Furtif", "Fouine", "Très", "Précis",
+    "Gentil", "Déco", "Glam", "Funky", "Brutal",
+    "Disco", "Calin", "Choupi", "Gaieté", "Foufou",
+    "Fring", "Groovy", "Foufou", "Limpid", "Zazou",
+    "Grin", "Génial", "Zigzag", "Inédit", "Chic",
+    "Craquant", "Crazy", "Flash", "Glitch", "Mignon"
   ];
 
-  let username =  noms[Math.floor(Math.random() * noms.length)] + adjectifs[Math.floor(Math.random() * adjectifs.length)];
+  let username =  noms[Math.floor(Math.random() * noms.length)] + " " + adjectifs[Math.floor(Math.random() * adjectifs.length)];
   return username
 
 }
@@ -631,6 +656,9 @@ const faireJouerBot = async (room, finPartie_) => {
       ////////////////////////////////////////////////// CORDIALEMENT.
       io.in(room.id).emit("messageChat", message, true);
     }
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     if (finPartie) {
       const gagnant = res[0][0];
       const estEgalite = res[0][1];
