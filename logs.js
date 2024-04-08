@@ -174,7 +174,7 @@ exports.enregistrerJSONecrase = () => {
     let jsonPartie = JSON.stringify(partie, null, 2); // Indentation de 2 espaces pour une meilleure lisibilité
 
     // Écrire la chaîne JSON dans un fichier
-    fs.writeFile('logs/dernierePartie.json', jsonPartie, (err) => {
+    fs.writeFile('/opt/render/log/dernierePartie.json', jsonPartie, (err) => {
         if (err) {
             console.error('Erreur lors de l\'écriture du fichier :', err);
             return;
@@ -184,14 +184,20 @@ exports.enregistrerJSONecrase = () => {
 }
 exports.enregistrerJSONincremente = () => {
     const date = new Date();
-    const stringDate = `${date.getDate()}-${date.getMonth()+1}-${date.getFullYear()}`;
+    let jour = date.getDate() + "";
+    if(jour.length == 1) jour = "0" + jour;
+    let mois = (date.getMonth()+1) + "";
+    if(mois.length == 1) mois = "0" + mois;
+    const annee = date.getFullYear() + "";
+    const stringDate = `${annee}-${mois}-${jour}`;
+    
     // Lire le contenu du fichier JSON
-fs.readFile(`logs/logs-${stringDate}.json`, 'utf8', (err, data) => {
+fs.readFile(`/opt/render/log/logs-${stringDate}.json`, 'utf8', (err, data) => {
     let jsonCourant;
     if (err) {
         if(err.code === 'ENOENT'){
             jsonCourant = {
-                date: stringDate,
+                date: date,
                 parties: []
             };
         }else{
@@ -210,7 +216,7 @@ fs.readFile(`logs/logs-${stringDate}.json`, 'utf8', (err, data) => {
     let jsonPartie = JSON.stringify(jsonCourant, null, 2);
 
     // Écrire la chaîne JSON dans le fichier
-    fs.writeFile(`logs/logs-${stringDate}.json`, jsonPartie, (err) => {
+    fs.writeFile(`/opt/render/log/logs-${stringDate}.json`, jsonPartie, (err) => {
         if (err) {
             console.error('Erreur lors de l\'écriture du fichier :', err);
             return;

@@ -19,6 +19,11 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public/templates/index.html"));
 });
 
+app.get("/bot", (req, res) => {
+  ///choses à envoyer au client (script, templates, ect...)
+  res.sendFile(path.join(__dirname, "public/templates/bot.html"));
+});
+
 http.listen(port, () => console.log(`listening on http://localhost:${port}`));
 let rooms = [];
 /*
@@ -428,6 +433,14 @@ io.on("connection", (socket) => {
 
 
   })
+
+  socket.on("CréerRoomsBot", async (p,nbBotAlea, nbBotAlgo,nbPartie) =>{
+    for(let i = 0; i<nbPartie ; i++){
+
+await new Promise(resolve => setTimeout(resolve, 500));
+    creerRoomBot(p,nbBotAlea,nbBotAlgo);
+    }
+  })
   /*
             SUITE SOCKET ON ET EMIT
     
@@ -514,6 +527,7 @@ if (room.players.every((joueur) => joueur.ready)) {
       room.id,
     );
     broadCastBotInit(room, plateau_secu);
+    faireJouerBot(room, false);
   }
 } else {
   // si tous les joueurs ne sont pas prets
@@ -610,7 +624,7 @@ const usernameBot = () =>{
 
 }
 
-const faireJouerBot = async (room, finPartie_) => {
+const faireJouerBot = async (room, finPartie_,wait = true) => {
   try {
     const partie = room.partie;
     let finPartie = finPartie_;
@@ -634,7 +648,9 @@ const faireJouerBot = async (room, finPartie_) => {
 
       if (!action[0]) {
         // si n'est pas un démasquage
+        if(wait){
         await new Promise((r) => setTimeout(r, 2000));
+        }
         const caseArrivee = jeu.getCaseArrivee(
           action[1],
           action[2],
@@ -646,7 +662,9 @@ const faireJouerBot = async (room, finPartie_) => {
         tabPourAnimation = [0, action[1], caseArrivee];
       } else {
         // si le bot veut denoncer
+        if(wait){
         await new Promise((r) => setTimeout(r, 2000));
+        }
         res = jeu.demasquerJoueur(room.partie, action[1], action[2]);
         finPartie = res[0] != false;
         message = res[1];
@@ -665,9 +683,9 @@ const faireJouerBot = async (room, finPartie_) => {
       ////////////////////////////////////////////////// CORDIALEMENT.
       io.in(room.id).emit("messageChat", message, true);
     }
-
+    if(wait){
     await new Promise((resolve) => setTimeout(resolve, 1000));
-
+    }
     if (finPartie) {
       const gagnant = res[0][0];
       const estEgalite = res[0][1];
@@ -705,3 +723,26 @@ function DateLog() {
 }
 
 console.log(DateLog());
+
+
+const creerRoomBot = (p,nbBotAlea = 2, nbBotAlgo =1) =>{
+  const room = createRoom(p);
+  const roomId = room.id;
+  // init bot host
+  
+  for(let i = 0; i<nbBotAlea;i++){
+    let bot = new botsAlea.BotAlea(`🤖 ${usernameBot()} (Aléa)`, roomId);
+    room.players.push(bot);
+  }
+  for(let i = 0; i<nbBotAlgo;i++){
+    let bot = new botsAlgo.BotAlgo(`🤖 ${usernameBot()} (Algo)`, roomId);
+    room.players.push(bot);
+  }
+  room.players.splice(0,1);
+  console.debug(room.players);
+  room.partie = jeu.initPartie(room.players.length, room.players);
+  const partie = room.partie;
+  const plateau_secu = partie.plateau.map(securisation_pion);
+  broadCastBotInit(room, plateau_secu);
+  faireJouerBot(room, false,false);
+}

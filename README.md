@@ -3,15 +3,25 @@
 #### Technologies utilisées : 
 - HTML/CSS
 - JavaScript
-- Node.js / Express / socket.io
-- Three.js ?
+- Node.js (version > 18.19) / Express / socket.io
+- Bootstrap
 
 
-#### Dependances 
-Executer : 
+#### Utilisation 
+- Installation :
+<code> git clone https://forge.univ-lyon1.fr/p2208435/plouf-party.git </code> <br/> dans le dossier plouf-Party:
 <code>npm install</code> 
-dans le dossier plouf-Party
-npm va lire le fichier package.json pour installer toute les dependances (normalement)
+
+npm va lire le fichier package.json pour installer toute les dependances 
+
+- Execution : 
+Dans le dossier plouf-Party:
+<code> node server.js </code>
+
+### Organisations fichiers
+- Public : Tout ce qui est accessible pour l'utilisateur client 
+- logs : Contient les log en format json pour les statistiques
+- Dossier courant : Tout les scripts serveur
 
 #### Regles du jeu
 Chaque joueur possède une couleur unique qu'il doit garder secrète, ainsi que 3 pions de cette couleurs avec les numéros 1, 2 et 3 indiqué dessous.

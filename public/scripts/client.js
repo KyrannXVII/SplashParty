@@ -111,6 +111,11 @@ socket.on(
 );
 
 const deplacementPossible = async (event) => {
+  //on desactive les boutons pions
+  document.querySelectorAll('[class^="pion"]').forEach((pion) => {
+    pion.removeEventListener("click", deplacementPossible);
+  });
+
   let monTour = undefined;
 
   socket.on("RetourMonTour", (retour) => {
@@ -126,6 +131,7 @@ const deplacementPossible = async (event) => {
   console.log(`${p.username} a son tour ? ${monTour}`);
 
   if (!monTour) {
+    activerPion();
     return;
   }
 
@@ -135,10 +141,7 @@ const deplacementPossible = async (event) => {
   const posiPion = pion.dataset.posi;
   let futurPosiPossible = undefined;
   let depPion;
-  //on desactive les boutons pions
-  document.querySelectorAll('[class^="pion"]').forEach((pion) => {
-    pion.removeEventListener("click", deplacementPossible);
-  });
+  
   socket.emit("deplacementPossible", posiPion, p.roomId);
 
   socket.on("retourDeplacementPossible", (deplacementPossible, x) => {
@@ -281,8 +284,8 @@ const bBotAleatoire = document.querySelector("#bBotAleatoire");
 bBotAleatoire.addEventListener("click", () => {console.log("ajouter bot alétoire"), ajouterBot(1);});
 const bBotAlgo = document.querySelector("#bBotAlgo");
 bBotAlgo.addEventListener("click", () => {console.log("ajouter bot algo"), ajouterBot(2);});
-const bBotIA = document.querySelector("#bBotIA");
-bBotIA.addEventListener("click", () => {console.log("ajouter bot IA"), ajouterBot(3);});
+/*const bBotIA = document.querySelector("#bBotIA");
+bBotIA.addEventListener("click", () => {console.log("ajouter bot IA"), ajouterBot(3);});*/
 
 
 bAjouterBot.addEventListener("click", () => {
@@ -290,7 +293,7 @@ bAjouterBot.addEventListener("click", () => {
   // listeners TODO pour ajouter les bots
   bBotAleatoire.classList.remove("cacher");
   bBotAlgo.classList.remove("cacher");
-  bBotIA.classList.remove("cacher");
+  //bBotIA.classList.remove("cacher");
 
   // X retire les boutons
   const bAnnulerAjouterBot = document.querySelector("#bAnnulerAjouterBot");
@@ -298,7 +301,7 @@ bAjouterBot.addEventListener("click", () => {
   bAnnulerAjouterBot.addEventListener("click", () => {
     bBotAleatoire.classList.add("cacher");
     bBotAlgo.classList.add("cacher");
-    bBotIA.classList.add("cacher");
+    //bBotIA.classList.add("cacher");
     bAnnulerAjouterBot.classList.add("cacher");
     bAjouterBot.disabled = false;
   });

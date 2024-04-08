@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="icon" href="/data/logo.png" />
+    <link rel="icon" href="../data/logo.png" />
     <link rel="stylesheet" href="/templates/styles.css">
     <!-- include pour Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -28,8 +28,8 @@
         <button id="bRegles" class="btn btn-xs btn-warning btn-header" data-bs-toggle="offcanvas" href="#offcanvasRegles" role="button" aria-controls="offcanvasRegles" >
             règles
         </button>
-        <button class="btn btn-xs btn-warning btn-header" onclick="window.open('lien vers questionnaire', '_blank')">
-            report Bug
+        <button class="btn btn-xs btn-warning btn-header" onclick="window.open('https://forms.gle/qKQFi7u7inALTWMs6', '_blank')">
+            Déclarer un bug
         </button>
         
     </header>
@@ -76,7 +76,8 @@
             <ul>
                 <li>Voir sa couleur: Une fois en jeu, survolez le cercle à droite de votre pseudo.</li>
                 <li>Déplacer un pion: Lorsque c'est à votre tour, cliquez sur le pion que vous voulez déplacer puis cliquez sur l'une des cases ayant changé de couleur
-                    pour le déplacer sur celle ci.
+                    pour le déplacer sur celle ci.<br>
+                    <b>Attention !</b> Si vous selectionnez un pion, vous êtes obligé de le jouer.
                 </li>
                 <li>Démasquer un joueur: Lorsque c'est à votre tour, choisissez le pseudo du joueur à démasquer et sa couleur, puis cliquez sur le bouton démasquer.</li>
 
@@ -193,7 +194,7 @@
             <div id="roomEtChat" class="ecran cacher container-fluid">
     
                 <br>
-                <div class="row">
+                <div class="row" id ="row1">
     
                     <!-- COTE JEU -->
                     <div id="divRoomJeu" class="col-9">
@@ -245,12 +246,15 @@
                                 <!-- ajouter .cacher a tous les boutons hors DEBUG -->
                                 <button id="bBotAleatoire" class="col-2 btn btn-dark btn-diff-bot cacher">Bot Aléatoire</button>
                                 <button id="bBotAlgo" class="col-2  btn btn-dark btn-diff-bot cacher">Bot Algo</button>
-                                <button id="bBotIA" class="col-2  btn btn-dark btn-diff-bot cacher">Bot IA</button>
+                                <!--<button id="bBotIA" class="col-2  btn btn-dark btn-diff-bot cacher">Bot IA</button>-->
                                 <button id="bAnnulerAjouterBot" class="col-1  btn btn-outline-danger btn-diff-bot cacher">X</button>
             
                             </div>
                             <br>
-            
+                            
+                            <div class="row-2">
+                                <div id="messageNbJoueurMin" class="text-center">Il faut au moins 3 joueurs pour lancer la partie</div>
+                            </div>
                             <div class="row-3 text-center">
                                 <button id="b-pret-roomjeu" class="btn btn-info fs-1">Prêt !</button>
                             </div>
@@ -373,12 +377,16 @@
                         </div>
                         <div id="divInputChat" class="row position-absolute bottom-0 start-50 translate-middle-x">
                             <div class="d-inline-flex">
-                                <input type="text" name="nouveau-message" id="inputChat" class="form-control">
+                                <input type z="text" name="nouveau-message" id="inputChat" class="form-control">
                                 <button id="boutonEnvoyerChat" class="btn btn-primary">Envoyer</button>
                             </div>
                         </div>
                     </div>
-                </div>        
+                </div>  
+                
+                <div class="row" id ="row2" style="height: 500px;" >
+                    
+                </div>
             </div>
     
             <!-- ECRAN DE A PROPOS -->
@@ -401,8 +409,8 @@
                         éventuellement pour d'autres étudiants intéressés par le développement de jeux et la gestion de projets informatiques.</p>
     
                         <p>Nous avons publié le code source de ce projet sur GitHub.
-                        <a href="lien_vers_votre_projet_github">Lien vers le projet GitHub</a></p>
-                        
+                        <a href="https://github.com/KyrannXVII/SplashParty" target="_blank">Lien vers le projet GitHub</a></p>
+
     
                         <button id="b-retour-a-propos" class="col btn btn-outline-primary">Retour au menu</button>
                     </div>

@@ -230,7 +230,18 @@ function afficherNomJoueurDansRoom(pseudo, estPret, estUnBot) {
   for (let i = 0; i < 6; i++) {
     //console.debug(affichagesJoueurs[i]);
     if (affichagesJoueurs[i].classList.contains("transparent")) {
-      //console.debug("ok");
+      console.debug(i);
+
+      const messageNbJoueurMin = document.querySelector("#messageNbJoueurMin");
+      if(i<2){
+        messageNbJoueurMin.classList.remove("cacher");
+      }
+      else{
+        messageNbJoueurMin.classList.add("cacher");
+      }
+
+      
+      
       affichagesJoueurs[i].classList.remove("transparent");
       const divPseudo = affichagesJoueurs[i].querySelector(".pseudoJoueur");
       divPseudo.textContent = texte;
@@ -272,6 +283,7 @@ function toutCacher() {
     decor.classList.add("cacher");
     decor.classList.remove("d-xl-block");
     decor.classList.remove("d-none");
+    decor.classList.remove("z-n1");
 
     const body = document.querySelector("body");
     body.classList.remove("fond-eau");
@@ -323,6 +335,7 @@ function afficherJeu() {
   decor.classList.remove("cacher");
   decor.classList.add("d-xl-block");
   decor.classList.add("d-none");
+  decor.classList.add("z-n1");
 }
 
 function afficherFinPartie() {
@@ -346,6 +359,7 @@ function afficherFinPartie() {
   decor.classList.remove("cacher");
   decor.classList.add("d-xl-block");
   decor.classList.add("d-none");
+  decor.classList.add("z-n1");
 
   const interface = document.querySelector("#interface");
   interface.classList.add("cacher");
@@ -536,3 +550,30 @@ function resetAnim(numCase) {
   }
 
 }
+
+// chat responsive
+let X = 800; // Remplacez par la valeur que vous voulez
+const divChat = document.querySelector("#divChat")
+const row1 = document.querySelector("#row1");
+const row2 = document.querySelector("#row2");
+
+const roomChat = document.querySelector("#roomEtChat");
+const divRoomJeu = document.querySelector("#divRoomJeu")
+window.addEventListener('resize', function() {
+    if (window.innerWidth < X) {
+        divChat.classList.remove("col-3")
+        row2.appendChild(divChat);
+        divChat.classList.add("col-6")
+        divRoomJeu.classList.remove("col-9")
+
+        divRoomJeu.classList.add("col-12")
+        
+    } else {
+      divChat.classList.add("col-3")
+      row1.appendChild(divChat);
+      divChat.classList.remove("col-6")
+      divRoomJeu.classList.remove("col-12")
+
+      divRoomJeu.classList.add("col-9")
+    }
+});

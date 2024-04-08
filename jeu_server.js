@@ -31,7 +31,7 @@ class Partie {
      * @constructor
      * @param {unsigned int} nbJoueur Le nombre de joueur dans la partie.
      * @param {*} listeJoueur La liste des joueurs dans la partie.
-     * @param {Pion[]} plateau Le plateau de jeu.
+     * @param {Array} plateau Le plateau de jeu.
      */
     constructor(nbJoueur, listeJoueur, plateau){
         this.nbJoueur = nbJoueur;
@@ -56,8 +56,8 @@ exports.initPartie= (x, listeJoueur) => {
     let couleursRestantes = $couleurs.slice(0,nbJoueurs);
     // init des joueurs
     console.debug("x")
-
     console.debug(x)
+    melangerTableau(listeJoueur);
     for(let i = 0; i<nbJoueurs; i++){
         let couleurChoisie = Math.floor(Math.random()*couleursRestantes.length);
         //console.debug("couleurChoisie");
@@ -223,6 +223,8 @@ exports.deplacer = (caseDepart, sens, partie) => {
         $couleurs[partie.listeJoueur[partie.aQuiLeTour].color], 
         couleurPionElimine);
     //// //// ////
+
+    
 
     // Verifie si la partie est finie
     if(partieFinie(partie.listeJoueur) || partie.plusDeJoueurHumain){
@@ -512,6 +514,28 @@ function partieFinie(listeJoueur){
     console.error(`Erreur lors de jeu_serveur partieFinie ${error}`);}
 }
 
+function estPartieInterminable(partie){
+    const joueursEnJeu = partie.listeJoueur.filter((joueur) => joueur.nbPions > 0);
+    if(joueursEnJeu.length == 3 && joueursEnJeu.some((joueur) => joueur.estUnBot && joueur.nbPions == 1)){
+        const positionsPions = [];
+        const pionsEnJeu = [];
+        for(let i=0; i<$taillePlateau; i++){
+            if(partie.plateau[i]!=$caseVide){
+                positionsPions.push(i);
+                pionsEnJeu.push(partie.plateau[i]);
+            }
+        }
+        if(pionsEnJeu.some((pion) => pion.deplacement == 3)
+            && positionsPions[0]%3 != positionsPions[1]%3
+            && positionsPions[1]%3 != positionsPions[2]%3
+            && positionsPions[2]%3 != positionsPions[0]%3
+        ){
+            return true
+        }
+    }
+    return false;
+}
+
 /**
  * Calcule le joueur gagnant
  * @param {Partie} partie 
@@ -662,4 +686,11 @@ function terminerPartie(partie){
  */
 Number.prototype.mod = function(n) {
     return ((this%n)+n)%n;
+}
+
+function melangerTableau(tableau) {
+    for (let i = tableau.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [tableau[i], tableau[j]] = [tableau[j], tableau[i]];
+    }
 }
