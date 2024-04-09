@@ -683,9 +683,7 @@ const faireJouerBot = async (room, finPartie_,wait = true) => {
       ////////////////////////////////////////////////// CORDIALEMENT.
       io.in(room.id).emit("messageChat", message, true);
     }
-    if(wait){
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    }
+   
     if (finPartie) {
       const gagnant = res[0][0];
       const estEgalite = res[0][1];
@@ -693,6 +691,9 @@ const faireJouerBot = async (room, finPartie_,wait = true) => {
       io.in(room.id).emit("messageChat", messageFin, true);
       io.in(room.id).emit("FinPartie", res[0]);
       //broadCastBotFinPartie(room);
+    }
+     if(wait){
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     }
   } catch (error) {
     console.error(`${DateLog()} -> Erreur lors de faireJouerBot`);
