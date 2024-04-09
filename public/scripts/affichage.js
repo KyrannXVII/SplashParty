@@ -550,30 +550,3 @@ function resetAnim(numCase) {
   }
 
 }
-
-// chat responsive
-let X = 800; // Remplacez par la valeur que vous voulez
-const divChat = document.querySelector("#divChat")
-const row1 = document.querySelector("#row1");
-const row2 = document.querySelector("#row2");
-
-const roomChat = document.querySelector("#roomEtChat");
-const divRoomJeu = document.querySelector("#divRoomJeu")
-window.addEventListener('resize', function() {
-    if (window.innerWidth < X) {
-        divChat.classList.remove("col-3")
-        row2.appendChild(divChat);
-        divChat.classList.add("col-6")
-        divRoomJeu.classList.remove("col-9")
-
-        divRoomJeu.classList.add("col-12")
-        
-    } else {
-      divChat.classList.add("col-3")
-      row1.appendChild(divChat);
-      divChat.classList.remove("col-6")
-      divRoomJeu.classList.remove("col-12")
-
-      divRoomJeu.classList.add("col-9")
-    }
-});
