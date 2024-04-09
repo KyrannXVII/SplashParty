@@ -235,13 +235,13 @@ socket.on("FinPartie", (resultat) => {
   const hUsername = document.querySelector("#username-gagnant");
 
   if (resultat[1] == 0) {
-    hUsername.innerText = `${resultat[0].username} gagne en ayant le plus de pions restants !`;
+    hUsername.innerText = `${resultat[0]} gagne en ayant le plus de pions restants !`;
   } else if (resultat[1] == 1) {
-    hUsername.innerText = `${resultat[0].username} gagne en étant le plus proche du plongeoir !`;
+    hUsername.innerText = `${resultat[0]} gagne en étant le plus proche du plongeoir !`;
   } else if (resultat[1] == 2) {
-    hUsername.innerText = `${resultat[0].username} gagne en ayant le meilleur pion le plus proche du plongeoir !`;
+    hUsername.innerText = `${resultat[0]} gagne en ayant le meilleur pion le plus proche du plongeoir !`;
   } else if (resultat[1] == 3) {
-    hUsername.innerText = `${resultat[0][0].username} et ${resultat[0][1].username} ont fait égalité !`;
+    hUsername.innerText = `${resultat[0][0]} et ${resultat[0][1]} ont fait égalité !`;
   }
 
   // Reset le stat des joueurs

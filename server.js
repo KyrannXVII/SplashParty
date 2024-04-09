@@ -48,7 +48,7 @@ io.on("connection", (socket) => {
         player.host = true;
         player.sonTour = true;
         console.log(
-          `${DateLog()} -> room crée : ${room.id}, host ${player.username}`,
+          `${DateLog()} -> room crée : ${room.id}, host ${player.username}`
         );
       } else {
         /* rejoindre une room */
@@ -73,7 +73,7 @@ io.on("connection", (socket) => {
       io.in(room.id).emit("actuRoom", room);
     } catch (error) {
       console.error(`${DateLog()} -> Erreur lors de playerData`);
-      console.error('Trace de la pile:', error.stack);
+      console.error("Trace de la pile:", error.stack);
     }
   });
 
@@ -84,7 +84,7 @@ io.on("connection", (socket) => {
       if (rooms.length > 0) {
         for (let room of rooms) {
           const idxPlayer = room.players.findIndex(
-            (player) => player.socketId === socket.id,
+            (player) => player.socketId === socket.id
           );
           if (idxPlayer >= 0) {
             //si le joueur est dans la room -> on a trouver la bonne room
@@ -94,10 +94,11 @@ io.on("connection", (socket) => {
               const joueur = room.players[idxPlayer];
               const botRemplacant = new botsAlea.BotAlea(
                 joueur.username,
-                room.id,
+                room.id
               );
               const plateau_secu = room.partie.plateau.map(securisation_pion);
-              botRemplacant.init(plateau_secu);
+              const listeJoueurUsername =  room.players.map(joueur => joueur.username)
+              botRemplacant.init(plateau_secu,listeJoueurUsername);
               botRemplacant.color = joueur.color;
               botRemplacant.nbPions = joueur.nbPions;
 
@@ -109,7 +110,7 @@ io.on("connection", (socket) => {
               console.debug(room.players);
               //// logs ////
               //TODO A corriger
-             // jeu.logs.joueurQuitte($couleurs[joueur.couleur]);
+              // jeu.logs.joueurQuitte($couleurs[joueur.couleur]);
               //// //// ////
 
               faireJouerBot(room, false);
@@ -167,8 +168,8 @@ io.on("connection", (socket) => {
         }
       }
     } catch (error) {
-      console.error(`${DateLog()} -> Erreur lors de disconnect`)
-      console.error('Trace de la pile:', error.stack);;;
+      console.error(`${DateLog()} -> Erreur lors de disconnect`);
+      console.error("Trace de la pile:", error.stack);
     }
   });
 
@@ -178,10 +179,10 @@ io.on("connection", (socket) => {
       console.debug("PRET!!");
       actualiserJoueur(player);
       let room = rooms.find((room) => room.id === player.roomId);
-      verificationPret(room);      
+      verificationPret(room);
     } catch (error) {
-      console.error(`${DateLog()} -> Erreur lors de joueurPret `)
-      console.error('Trace de la pile:', error.stack);
+      console.error(`${DateLog()} -> Erreur lors de joueurPret `);
+      console.error("Trace de la pile:", error.stack);
     }
   });
 
@@ -205,7 +206,7 @@ io.on("connection", (socket) => {
       socket.emit("retourDeplacementPossible", deplacementPossible, depPion);
     } catch {
       console.error(
-        `${DateLog()} -> Erreur lors de deplacementPossible ${error}`,
+        `${DateLog()} -> Erreur lors de deplacementPossible ${error}`
       );
     }
   });
@@ -216,13 +217,13 @@ io.on("connection", (socket) => {
       const retour = jeu.estCoupPrecedentInverse(
         posiPion,
         idxCase,
-        room.partie,
+        room.partie
       );
       //console.debug(retour);
       socket.emit("retourEstCoupPrecedentInverse", retour);
     } catch {
       console.error(
-        `${DateLog()} -> Erreur lors de estCoupPrecedentInverse ${error}`,
+        `${DateLog()} -> Erreur lors de estCoupPrecedentInverse ${error}`
       );
     }
   });
@@ -235,7 +236,7 @@ io.on("connection", (socket) => {
       const caseArrivee = jeu.getCaseArrivee(
         posiPion,
         direction,
-        room.partie.plateau,
+        room.partie.plateau
       );
       let res = jeu.deplacer(posiPion, direction, room.partie);
       finPartie = res[0] != false;
@@ -249,7 +250,7 @@ io.on("connection", (socket) => {
         plateau_secu,
         partie.aQuiLeTour,
         liste_username,
-        [0, posiPion, caseArrivee],
+        [0, posiPion, caseArrivee]
       );
       broadCastBotActu(room, plateau_secu, [0, posiPion, caseArrivee]); ////////////////////////////////////////////////// FALSE CAR ASKIP PAS ENCORE DE DENON FAUT S'EN OCCUPER TA MERE!
       io.in(room.id).emit("messageChat", message, true);
@@ -258,17 +259,23 @@ io.on("connection", (socket) => {
 
       if (finPartie) {
         const gagnant = res[0][0];
-        const estEgalite = res[0][1];
+        const typeVictoire = res[0][1];
         const messageFin = res[0][2];
         io.in(room.id).emit("messageChat", messageFin, true);
-        io.in(room.id).emit("FinPartie", res[0]);
+        let tableauGagnant;
+        if (typeVictoire == 3) {
+          tableauGagnant = gagnant.map((joueur) => joueur.username);
+        } else {
+          tableauGagnant = [gagnant.username];
+        }
+        io.in(room.id).emit("FinPartie", [tableauGagnant, typeVictoire]);
         //broadCastBotFinPartie(room);
       } else {
         faireJouerBot(room, finPartie);
       }
     } catch (error) {
       console.error(`${DateLog()} -> Erreur lors de deplacerPion`);
-      console.error('Trace de la pile:', error.stack);
+      console.error("Trace de la pile:", error.stack);
     }
   });
 
@@ -280,7 +287,7 @@ io.on("connection", (socket) => {
       socket.emit("RetourMonTour", retour);
     } catch (error) {
       console.error(`${DateLog()} -> Erreur lors de MonTour `);
-      console.error('Trace de la pile:', error.stack);;
+      console.error("Trace de la pile:", error.stack);
     }
   });
 
@@ -292,7 +299,7 @@ io.on("connection", (socket) => {
       console.debug(`PROBLEME NB PIONS = ${joueur.nbPions}`);
       const room = rooms.find((room) => room.id === joueur.roomId);
       io.in(room.id).emit("actuRoom", room);
-    } catch {
+    } catch(error) {
       console.error(`${DateLog()} -> Erreur lors de actualiserJoueur ${error}`);
     }
   });
@@ -320,8 +327,9 @@ io.on("connection", (socket) => {
       socket.emit("retourListesJoueursEtCouleursEnJeu", couleurs, joueurs);
     } catch (error) {
       console.error(
-        `${DateLog()} -> Erreur lors de listesJoueursEtCouleursEnJeu`);
-      console.error('Trace de la pile:', error.stack);
+        `${DateLog()} -> Erreur lors de listesJoueursEtCouleursEnJeu`
+      );
+      console.error("Trace de la pile:", error.stack);
     }
   });
 
@@ -344,24 +352,31 @@ io.on("connection", (socket) => {
 
       if (finPartie) {
         const liste_username = room.partie.listeJoueur.map(
-          (joueur) => joueur.username,
+          (joueur) => joueur.username
         );
         io.in(room.id).emit(
           "actualisePartie",
           room.partie.plateau,
           room.partie.aQuiLeTour,
           liste_username,
-          [1, tabPionsElimines],
+          [1, tabPionsElimines]
         );
         const gagnant = res[0][0];
-        const estEgalite = res[0][1];
+        const typeVictoire = res[0][1];
         const messageFin = res[0][2];
         io.in(room.id).emit("messageChat", messageFin, true);
-        io.in(room.id).emit("FinPartie", res[0]);
+        let tableauGagnant;
+        if (typeVictoire == 3) {
+          tableauGagnant = gagnant.map((joueur) => joueur.username);
+        } else {
+          tableauGagnant = [gagnant.username];
+        }
+        io.in(room.id).emit("FinPartie", [tableauGagnant, typeVictoire]);
+
         //broadCastBotFinPartie(room);
       } else {
         const liste_username = room.partie.listeJoueur.map(
-          (joueur) => joueur.username,
+          (joueur) => joueur.username
         );
         let plateau_secu = room.partie.plateau.map(securisation_pion);
         io.in(room.id).emit(
@@ -369,14 +384,14 @@ io.on("connection", (socket) => {
           room.partie.plateau,
           room.partie.aQuiLeTour,
           liste_username,
-          [1, tabPionsElimines],
+          [1, tabPionsElimines]
         );
         broadCastBotActu(room, plateau_secu, [1, tabPionsElimines]); //true car demasquage
         faireJouerBot(room, finPartie);
       }
     } catch (error) {
       console.error(`${DateLog()} -> Erreur lors de demasquer ${error}`);
-      console.error('Trace de la pile:', error.stack);;
+      console.error("Trace de la pile:", error.stack);
     }
     //console.debug("room.partie a la fin de demasquer");
     //console.debug(room.partie);
@@ -388,7 +403,7 @@ io.on("connection", (socket) => {
       io.in(room.id).emit("messageChat", `${username} : ${message}`, false);
     } catch (error) {
       console.error(`${DateLog()} -> Erreur lors de envoyerChat`);
-      console.error('Trace de la pile:', error.stack);;
+      console.error("Trace de la pile:", error.stack);
     }
   });
 
@@ -417,30 +432,26 @@ io.on("connection", (socket) => {
 
       console.debug(room.players);
       io.in(room.id).emit("actuRoom", room);
-      verificationPret(room); 
+      verificationPret(room);
     } catch (error) {
       console.error(`${DateLog()} -> Erreur lors de AjouterBot`);
-      console.error('Trace de la pile:', error.stack);;
+      console.error("Trace de la pile:", error.stack);
     }
   });
-  
-  socket.on("RetirerBot",(index,roomid) =>{
-  
-    const room = rooms.find((room) => room.id === roomid);  
+
+  socket.on("RetirerBot", (index, roomid) => {
+    const room = rooms.find((room) => room.id === roomid);
     room.players.splice(index, 1);
     room.nbBot--;
     io.in(room.id).emit("actuRoom", room);
+  });
 
-
-  })
-
-  socket.on("CréerRoomsBot", async (p,nbBotAlea, nbBotAlgo,nbPartie) =>{
-    for(let i = 0; i<nbPartie ; i++){
-
-await new Promise(resolve => setTimeout(resolve, 500));
-    creerRoomBot(p,nbBotAlea,nbBotAlgo);
+  socket.on("CréerRoomsBot", async (p, nbBotAlea, nbBotAlgo, nbPartie) => {
+    for (let i = 0; i < nbPartie; i++) {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      creerRoomBot(p, nbBotAlea, nbBotAlgo);
     }
-  })
+  });
   /*
             SUITE SOCKET ON ET EMIT
     
@@ -468,7 +479,7 @@ const actualiserJoueur = (p) => {
   const room = rooms.find((room) => room.id === p.roomId);
   //console.debug(room);
   let idxJoueur = room.players.findIndex(
-    (player) => player.socketId === p.socketId,
+    (player) => player.socketId === p.socketId
   );
   //console.debug(idxJoueur);
   room.players[idxJoueur] = p;
@@ -494,47 +505,47 @@ const securisation_pion = (pion) => {
 };
 
 const verificationPret = (room) => {
-if (room.players.every((joueur) => joueur.ready)) {
-  // si tous les joueurs sont prets
-  if (room.players.length < 3) {
-    console.log("Il faut au moins 3 joueurs pour commencer une partie");
-    io.in(room.id).emit("actuRoom", room);
+  if (room.players.every((joueur) => joueur.ready)) {
+    // si tous les joueurs sont prets
+    if (room.players.length < 3) {
+      console.log("Il faut au moins 3 joueurs pour commencer une partie");
+      io.in(room.id).emit("actuRoom", room);
+    } else {
+      //console.log('room.player');
+      //console.log(room.players);
+      room.partie = jeu.initPartie(room.players.length, room.players);
+      const partie = room.partie;
+      const liste_username = partie.listeJoueur.map(
+        (joueur) => joueur.username
+      );
+      const plateau_secu = partie.plateau.map(securisation_pion);
+      room.players.map((j) => {
+        if (!j.estUnBot) {
+          console.debug("ICI PAS UN BOT!");
+          j.ready = false;
+        }
+      });
+      console.debug("room.players");
+
+      console.debug(room.players);
+      io.in(room.id).emit("messageChat", "== NOUVELLE PARTIE ==", true);
+      io.in(room.id).emit(
+        "lancerPartie",
+        plateau_secu,
+        partie.aQuiLeTour,
+        liste_username,
+        partie.nbJoueur,
+        room.id
+      );
+      broadCastBotInit(room, plateau_secu);
+      faireJouerBot(room, false);
+    }
   } else {
-    //console.log('room.player');
-    //console.log(room.players);
-    room.partie = jeu.initPartie(room.players.length, room.players);
-    const partie = room.partie;
-    const liste_username = partie.listeJoueur.map(
-      (joueur) => joueur.username,
-    );
-    const plateau_secu = partie.plateau.map(securisation_pion);
-    room.players.map((j)=>{
-      if(!j.estUnBot){
-        console.debug("ICI PAS UN BOT!");
-        j.ready = false;
-      }
-    })
-    console.debug("room.players");
-
-    console.debug(room.players);
-    io.in(room.id).emit("messageChat", "== NOUVELLE PARTIE ==", true);
-    io.in(room.id).emit(
-      "lancerPartie",
-      plateau_secu,
-      partie.aQuiLeTour,
-      liste_username,
-      partie.nbJoueur,
-      room.id,
-    );
-    broadCastBotInit(room, plateau_secu);
-    faireJouerBot(room, false);
+    // si tous les joueurs ne sont pas prets
+    console.log("Tous les joueurs ne sont pas pret");
+    io.in(room.id).emit("actuRoom", room);
   }
-} else {
-  // si tous les joueurs ne sont pas prets
-  console.log("Tous les joueurs ne sont pas pret");
-  io.in(room.id).emit("actuRoom", room);
-}}
-
+};
 
 // ****************************** GESTION BOT
 const broadCastBotInit = (room, plateau) => {
@@ -543,7 +554,8 @@ const broadCastBotInit = (room, plateau) => {
       //  console.log(element.username);
       // console.log(typeof element);
       element.nbPions = 3;
-      element.init(plateau);
+      const listeJoueurUsername =  room.players.map(joueur => joueur.username)
+      element.init(plateau,listeJoueurUsername);
     }
   });
 };
@@ -569,8 +581,8 @@ const broadCastBotFinPartie = (room) => {
   });
 };
 
-const usernameBot = () =>{
- /* const noms = [
+const usernameBot = () => {
+  /* const noms = [
     "Bidule", "Choupinou", "Loulou", "Pamplemousse", "Cacahuète",
     "Bibi", "Frimousse", "Titi", "Minou", "Zazou",
     "Papillon", "Poussin", "Croquignol", "Tic-tac", "Paillette",
@@ -593,38 +605,120 @@ const usernameBot = () =>{
     "Éblouissant", "Amusant", "Éclatant", "Excentrique", "Fantaisiste",
     "Fringant", "Jubilatoire", "Loufoque", "Marrant", "Original",
     "Rigolo", "Surprenant", "Volubile", "Zazou", "Zinzolin"
-  ];*/ 
+  ];*/
   const noms = [
-    "Bidule", "Loulou", "Bibi", "Minou", "Zazou",
-    "Tic-tac", "Poule", "Bambou", "Zozo", "Sardou",
-    "Chipie", "Gaston", "Pistou", "Zigzag", "Ginette",
-    "Louise", "Zébu", "Boubou", "Nin-Nin", "Pirate",
-    "Titi", "Minet", "Papaye", "Pop-corn", "Pimousse",
-    "Kiki", "Ricrac", "Minnie", "Tourni", "Câlin",
-    "Poupi", "Mickey", "Tartif", "Tonton", "Papou",
-    "Pépère", "Cocoon", "Gigi", "Trotro", "Vénus",
-    "Cassis", "Médor", "Boubou", "Bidibi", "Pupuce",
-    "Zazie", "Moumou", "Babou", "Bibine", "Zazou"
-  ]
+    "Bidule",
+    "Loulou",
+    "Bibi",
+    "Minou",
+    "Zazou",
+    "Tic-tac",
+    "Poule",
+    "Bambou",
+    "Zozo",
+    "Sardou",
+    "Chipie",
+    "Gaston",
+    "Pistou",
+    "Zigzag",
+    "Ginette",
+    "Louise",
+    "Zébu",
+    "Boubou",
+    "Nin-Nin",
+    "Pirate",
+    "Titi",
+    "Minet",
+    "Papaye",
+    "Pop-corn",
+    "Pimousse",
+    "Kiki",
+    "Ricrac",
+    "Minnie",
+    "Tourni",
+    "Câlin",
+    "Poupi",
+    "Mickey",
+    "Tartif",
+    "Tonton",
+    "Papou",
+    "Pépère",
+    "Cocoon",
+    "Gigi",
+    "Trotro",
+    "Vénus",
+    "Cassis",
+    "Médor",
+    "Boubou",
+    "Bidibi",
+    "Pupuce",
+    "Zazie",
+    "Moumou",
+    "Babou",
+    "Bibine",
+    "Zazou",
+  ];
   const adjectifs = [
-    "Drôle", "Givré", "Foufou", "Farfel", "Fiesta",
-    "Pétant", "Tordu", "Zinzin", "Coquin", "Zinzin",
-    "Rigolo", "Frivole", "Dingue", "Fougue", "Dinghy",
-    "Badin", "Bavard", "Zinzin", "Givré", "Fiesta",
-    "Zazou", "Furtif", "Fouine", "Très", "Précis",
-    "Gentil", "Déco", "Glam", "Funky", "Brutal",
-    "Disco", "Calin", "Choupi", "Gaieté", "Foufou",
-    "Fring", "Groovy", "Foufou", "Limpid", "Zazou",
-    "Grin", "Génial", "Zigzag", "Inédit", "Chic",
-    "Craquant", "Crazy", "Flash", "Glitch", "Mignon"
+    "Drôle",
+    "Givré",
+    "Foufou",
+    "Farfel",
+    "Fiesta",
+    "Pétant",
+    "Tordu",
+    "Zinzin",
+    "Coquin",
+    "Zinzin",
+    "Rigolo",
+    "Frivole",
+    "Dingue",
+    "Fougue",
+    "Dinghy",
+    "Badin",
+    "Bavard",
+    "Zinzin",
+    "Givré",
+    "Fiesta",
+    "Zazou",
+    "Furtif",
+    "Fouine",
+    "Très",
+    "Précis",
+    "Gentil",
+    "Déco",
+    "Glam",
+    "Funky",
+    "Brutal",
+    "Disco",
+    "Calin",
+    "Choupi",
+    "Gaieté",
+    "Foufou",
+    "Fring",
+    "Groovy",
+    "Foufou",
+    "Limpid",
+    "Zazou",
+    "Grin",
+    "Génial",
+    "Zigzag",
+    "Inédit",
+    "Chic",
+    "Craquant",
+    "Crazy",
+    "Flash",
+    "Glitch",
+    "Mignon",
   ];
 
-  let username =  noms[Math.floor(Math.random() * noms.length)] + " " + adjectifs[Math.floor(Math.random() * adjectifs.length)];
-  return username
+  let username =
+    noms[Math.floor(Math.random() * noms.length)] +
+    " " +
+    adjectifs[Math.floor(Math.random() * adjectifs.length)];
+  return username;
+};
 
-}
-
-const faireJouerBot = async (room, finPartie_,wait = true) => {
+const faireJouerBot = async (room, finPartie_, wait = true) => {
   try {
     const partie = room.partie;
     let finPartie = finPartie_;
@@ -648,13 +742,14 @@ const faireJouerBot = async (room, finPartie_,wait = true) => {
 
       if (!action[0]) {
         // si n'est pas un démasquage
-        if(wait){
-        await new Promise((r) => setTimeout(r, 2000));
+        if (wait) {
+          await new Promise((r) => setTimeout(r, 2000));
         }
+
         const caseArrivee = jeu.getCaseArrivee(
           action[1],
           action[2],
-          room.partie.plateau,
+          room.partie.plateau
         );
         res = jeu.deplacer(action[1], action[2], room.partie); // pion et sens
         finPartie = res[0] != false;
@@ -662,12 +757,15 @@ const faireJouerBot = async (room, finPartie_,wait = true) => {
         tabPourAnimation = [0, action[1], caseArrivee];
       } else {
         // si le bot veut denoncer
-        if(wait){
-        await new Promise((r) => setTimeout(r, 2000));
+        if (wait) {
+          await new Promise((r) => setTimeout(r, 2000));
         }
+
         res = jeu.demasquerJoueur(room.partie, action[1], action[2]);
         finPartie = res[0] != false;
         message = res[1];
+        const tabPionsElimines = res[2];
+        tabPourAnimation = [1, tabPionsElimines];
       }
 
       liste_username = partie.listeJoueur.map((joueur) => joueur.username);
@@ -677,37 +775,39 @@ const faireJouerBot = async (room, finPartie_,wait = true) => {
         plateau_secu,
         partie.aQuiLeTour,
         liste_username,
-        tabPourAnimation,
+        tabPourAnimation
       );
       broadCastBotActu(room, plateau_secu, tabPourAnimation); ////////////////////////////////////////////////// FALSE CAR ASKIP PAS ENCORE DE DENON FAUT S'EN OCCUPER TA MERE!
       ////////////////////////////////////////////////// CORDIALEMENT.
       io.in(room.id).emit("messageChat", message, true);
     }
-   
+    if (wait) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
     if (finPartie) {
       const gagnant = res[0][0];
-      const estEgalite = res[0][1];
+      const typeVictoire = res[0][1];
       const messageFin = res[0][2];
       io.in(room.id).emit("messageChat", messageFin, true);
-      io.in(room.id).emit("FinPartie", res[0]);
+      let tableauGagnant;
+      if (typeVictoire == 3) {
+        tableauGagnant = gagnant.map((joueur) => joueur.username);
+      } else {
+        tableauGagnant = [gagnant.username];
+      }
+      io.in(room.id).emit("FinPartie", [tableauGagnant, typeVictoire]);
       //broadCastBotFinPartie(room);
-    }
-     if(wait){
-    await new Promise((resolve) => setTimeout(resolve, 1000));
     }
   } catch (error) {
     console.error(`${DateLog()} -> Erreur lors de faireJouerBot`);
-    console.error('Trace de la pile:', error.stack);;
-}
+    console.error("Trace de la pile:", error.stack);
+  }
   //return finPartie
 };
 
 const joueurNonBot = (listeJoueur) => {
   return listeJoueur.every((j) => j.estUnBot);
 };
-
-
-
 
 // TEST SERVEUR LOG
 function createFileWithHelloWorld() {
@@ -725,25 +825,24 @@ function DateLog() {
 
 console.log(DateLog());
 
-
-const creerRoomBot = (p,nbBotAlea = 2, nbBotAlgo =1) =>{
+const creerRoomBot = (p, nbBotAlea = 2, nbBotAlgo = 1) => {
   const room = createRoom(p);
   const roomId = room.id;
   // init bot host
-  
-  for(let i = 0; i<nbBotAlea;i++){
+
+  for (let i = 0; i < nbBotAlea; i++) {
     let bot = new botsAlea.BotAlea(`🤖 ${usernameBot()} (Aléa)`, roomId);
     room.players.push(bot);
   }
-  for(let i = 0; i<nbBotAlgo;i++){
+  for (let i = 0; i < nbBotAlgo; i++) {
     let bot = new botsAlgo.BotAlgo(`🤖 ${usernameBot()} (Algo)`, roomId);
     room.players.push(bot);
   }
-  room.players.splice(0,1);
+  room.players.splice(0, 1);
   console.debug(room.players);
   room.partie = jeu.initPartie(room.players.length, room.players);
   const partie = room.partie;
   const plateau_secu = partie.plateau.map(securisation_pion);
   broadCastBotInit(room, plateau_secu);
-  faireJouerBot(room, false,false);
-}
+  faireJouerBot(room, false, false);
+};

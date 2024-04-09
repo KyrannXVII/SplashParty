@@ -166,6 +166,7 @@ exports.setGagnant = (couleur) => {
 exports.setTypeVictoire = (type) => {
     partie.typeVictoire = type;
 }
+// /opt/render/log pour le dossier de de prod
 
 const fs = require('fs');
 const { initPartie } = require('./jeu_server');

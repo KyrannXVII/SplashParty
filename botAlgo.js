@@ -11,15 +11,18 @@ class BotAlgo {
     this.ready = true;
     this.color = undefined;
     this.plateauLocal = undefined;
+    this.coupPrecedant= undefined;
   }
 
   /**
    * Initialise les structures de données utilisées par le bot.
    * @param {Plateau} plateau
    */
-  init(plateau) {
+  init(plateau, listeJoueurs) {
     this.plateauLocal = new PlateauBot(plateau, this.color);
     this.plateauLocal.majPlt(plateau);
+    this.listeJoueurs = listeJoueurs;
+    this.listeJoueurs.filter((e) => e != this.username);
   }
   /**
    * Met à jour les informations de déplacement d'un pion.
@@ -28,13 +31,17 @@ class BotAlgo {
    * @param {Boolean} denonciation True si denonciation au dernier tour.
    */
   maj(plt, coupPrecedant) {
-    if (coupPrecedant[0] === 0 && coupPrecedant !== undefined) {
-      //pas une dénonciation au coup d'avant
-      this.plateauLocal.deplacementPionMaj(
-        coupPrecedant[1],
-        (+coupPrecedant[1] + +coupPrecedant[2]).mod(4)
-      );
+    this.coupPrecedant = coupPrecedant;
+    if (coupPrecedant !== undefined) {
+      if (coupPrecedant[0] === 0) {
+        //pas une dénonciation au coup d'avant
+        this.plateauLocal.deplacementPionMaj(
+          coupPrecedant[1],
+          (+coupPrecedant[1] + +coupPrecedant[2]).mod(4)
+        );
+      }
     }
+
     this.plateauLocal.majPlt(plt);
   }
   /**
@@ -42,11 +49,18 @@ class BotAlgo {
    * @return Un array de : [bool : vrai si dénonciation, unsigned int : index du tableau du pion à déplacer, bool : sens]
    */
   jouer() {
-    //console.log("AVANT MAJ");
-    //console.log(this.plateauLocal.pions);
+    const aleaDenoncer = Math.random() > 0;
+    if (aleaDenoncer) {
+      const aleaJoueur =
+        this.listeJoueurs[
+          Math.floor(Math.random() * (this.listeJoueurs.length - 1))
+        ];
+      const aleaCouleur = $couleurs.filter((e) => e !== this.color)[
+        Math.floor(Math.random() * (this.listeJoueurs.length - 1))
+      ];
+      return [true, aleaJoueur, $couleurs.indexOf(aleaCouleur)];
+    }
     this.plateauLocal.nivDangerMajAll();
-    //console.log("APRES MAJ");
-    //console.log(this.plateauLocal.pions);
     let pionLePlusDangereux = this.plateauLocal.pions;
     let indexPionLePlusDangereux;
     //init non vide du pion le plus dangereux
@@ -115,7 +129,11 @@ class BotAlgo {
         });
       }
     }
-    //TODO test coup precedant
+    for(let i = 0; i < mouvementPossible.length; i++){
+      if(mouvementPossible[i].coup === this.coupPrecedant){
+        mouvementPossible.splice(i, 1);
+      }
+    }
     for (let i = 0; i < mouvementPossible.length; i++) {
       if (mouvementPossible[i].proba < probaMax) {
         mouvementPossible.splice(i, 1);
@@ -230,7 +248,8 @@ class PlateauBot {
     this.nivDanger[indexCasePlateau] = 0;
     for (let i = 1; i <= 3; i++) {
       let idPionPlus = this.idPions[(indexCasePlateau + i).mod($taillePlateau)];
-      let idPionMoins = this.idPions[(indexCasePlateau - i).mod($taillePlateau)];
+      let idPionMoins =
+        this.idPions[(indexCasePlateau - i).mod($taillePlateau)];
       if (idPionPlus != $caseVide) {
         this.nivDanger[indexCasePlateau] +=
           this.pions[idPionPlus].probaDeplacement[i - 1];
