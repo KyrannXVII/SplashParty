@@ -49,7 +49,7 @@ class BotAlgo {
    * @return Un array de : [bool : vrai si dénonciation, unsigned int : index du tableau du pion à déplacer, bool : sens]
    */
   jouer() {
-    const aleaDenoncer = Math.random() > 0;
+    const aleaDenoncer = Math.random() > 0.95;
     if (aleaDenoncer) {
       const aleaJoueur =
         this.listeJoueurs[
