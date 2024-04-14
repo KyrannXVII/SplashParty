@@ -194,7 +194,7 @@
             <div id="roomEtChat" class="ecran cacher container-fluid">
     
                 <br>
-                <div class="row">
+                <div class="row" id="row1">
     
                     <!-- COTE JEU -->
                     <div id="divRoomJeu" class="col-9">
@@ -269,7 +269,7 @@
                         <!-- ECRAN FIN DE PARTIE -->
                         <div id = "ecran-fin-partie-haut" class ="ecran cacher vstack">
                             <div class="Gagnant">
-                                <h1 id="username-gagnant"></h1>
+                                <h3 id="username-gagnant"></h3>
                             </div>
                         </div>
     
@@ -376,15 +376,19 @@
                             </div>
                         </div>
                         <div id="divInputChat" class="row position-absolute bottom-0 start-50 translate-middle-x">
-                            <div class="d-inline-flex">
-                                <input type z="text" name="nouveau-message" id="inputChat" class="form-control">
-                                <button id="boutonEnvoyerChat" class="btn btn-primary">Envoyer</button>
+                            <div class="d-inline-flex justify-content-center">
+                                <input type z="text" name="nouveau-message" id="inputChat" class="form-control col-7">
+                                <button id="boutonEnvoyerChat" class="btn btn-primary col-4 text-center justify-content-center">→</button>
                             </div>
                         </div>
                     </div>
                 </div>  
                     
+                <div class="row cacher" id ="row2" style="height: 500px;" >
+                    
                 </div>
+
+                
             </div>
     
             <!-- ECRAN DE A PROPOS -->

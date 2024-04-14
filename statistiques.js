@@ -101,8 +101,8 @@ for (let i = 0; i <= daysDiff; i++) {
 
         const nbJoueurs = partie.listeJoueurs.length;
         const nbHumains = partie.listeJoueurs.filter(joueur=>joueur.type=="humain").length;
-        const nbBotAlea = partie.listeJoueurs.filter(joueur=>joueur.type=="botAlea" || joueur.type==undefined).length;
-        const nbBotAlgo = partie.listeJoueurs.filter(joueur=>joueur.type=="botAlgo").length;
+        const nbBotAlea = partie.listeJoueurs.filter(joueur=>joueur.type=="BotAlea" || joueur.type==undefined).length;
+        const nbBotAlgo = partie.listeJoueurs.filter(joueur=>joueur.type=="BotAlgo").length;
         //console.debug("///////////////");
         //console.debug(nbJoueurs);
         //console.debug(nbHumains);
@@ -133,7 +133,7 @@ for (let i = 0; i <= daysDiff; i++) {
                 },
                 "nbParties": 0,
                 "nbPartiesAnnulees": 0,
-                "dureeMoyenne": 1234,
+                "dureeMoyenne": 0,
                 "victoires":{
                     "nbVictoiresH": 0,
                     "nbVictoiresAlea": 0,
@@ -188,10 +188,10 @@ for (let i = 0; i <= daysDiff; i++) {
                     case "humain":
                         typeDePartie.victoires.nbVictoiresH++;
                         break;
-                    case "botAlea":
+                    case "BotAlea":
                         typeDePartie.victoires.nbVictoiresAlea++;
                         break;
-                    case "botAlgo":
+                    case "BotAlgo":
                         typeDePartie.victoires.nbVictoiresAlgo++;
                         break;
                     default:
@@ -227,7 +227,7 @@ for (let i = 0; i <= daysDiff; i++) {
                 case "prochePlongeoir":
                     typeDePartie.victoires.nbVictoireTypeProchePlongoir++;
                     break;
-                case "meilleurDep":
+                case "meilleurPion":
                     typeDePartie.victoires.nbVictoireTypeMeilleurDep++;
                     break;
                 case "egalite":
@@ -246,10 +246,10 @@ for (let i = 0; i <= daysDiff; i++) {
                             case "humain":
                                 typeDePartie.demasquages.nbHumainsDemasque++;
                                 break;
-                            case "botAlea":
+                            case "BotAlea":
                                 typeDePartie.demasquages.nbAleaDemasque++;
                                 break;
-                            case "botAlgo":
+                            case "BotAlgo":
                                 typeDePartie.demasquages.nbAlgoDemasque++;
                                 break;
                             default:
@@ -261,15 +261,16 @@ for (let i = 0; i <= daysDiff; i++) {
                 else{ // deplacement
                     if(coup.elimine){
                         const eliminePar = partie.listeJoueurs.filter(joueur=>joueur.couleur == coup.joueur)[0];
+                        //console.debug(eliminePar.type);
 
                         switch (eliminePar.type) {
                             case "humain":
                                 typeDePartie.eliminations.nbPionsMangesParH++;
                                 break;
-                            case "botAlea":
+                            case "BotAlea":
                                 typeDePartie.eliminations.nbPionsMangesParAlea++;
                                 break;
-                            case "botAlgo":
+                            case "BotAlgo":
                                 typeDePartie.eliminations.nbPionsMangesParAlgo++;
                                 break;
                             default:

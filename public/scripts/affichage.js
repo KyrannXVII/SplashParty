@@ -188,7 +188,7 @@ function messageChat(message, estInfoPartie) {
   divMessage.classList.add("border-bottom");
   divMessage.classList.add("border-light-subtle");
 
-  divMessage.innerHTML = message;
+  divMessage.textContent = message;
 
   if (estInfoPartie) {
     divMessage.style.color = "grey";
@@ -539,6 +539,38 @@ async function animationElimine(numCase) {
           dialogElimine.show();
   }
 }
+
+// chat responsive
+let X = 800; // Remplacez par la valeur que vous voulez
+const divChat = document.querySelector("#divChat")
+const row1 = document.querySelector("#row1");
+const row2 = document.querySelector("#row2");
+
+const roomChat = document.querySelector("#roomEtChat");
+const divRoomJeu = document.querySelector("#divRoomJeu")
+window.addEventListener('resize', function() {
+    if (window.innerWidth < X) {
+        divChat.classList.remove("col-3")
+        row2.appendChild(divChat);
+        divChat.classList.add("col-6")
+        divRoomJeu.classList.remove("col-9")
+
+        divRoomJeu.classList.add("col-12")
+
+        row2.classList.remove("cacher");
+        
+    } else {
+      divChat.classList.add("col-3")
+      row1.appendChild(divChat);
+      divChat.classList.remove("col-6")
+      divRoomJeu.classList.remove("col-12")
+
+      divRoomJeu.classList.add("col-9")
+        
+        row2.classList.add("cacher");
+    }
+});
+
 
 function resetAnim(numCase) {
   const caseAnim = document.querySelector(`#case${numCase}`);
